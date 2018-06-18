@@ -1,0 +1,36 @@
+title: Hello ! Bienvenue sur le blog de Thomas Rumas
+description: > # this means to ignore newlines until "baseurl:"
+  Je suis un développeur front-end, passionné de mon métier mais aussi de Design, du Cloud, de la photographie et de bien d'autres choses, ce blog aura pour but de vous faire découvrir
+  des choses sur de nombreux sujets qui me passionnent. 
+permalink: ':title/'
+baseurl: "/flexible-jekyll" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+site-twitter: #if your site has a twitter account, enter it here
+
+# Author Settings
+author: Thomas Rumas # add your name
+author-img: logo.jpg # add your photo
+about-author: Je suis un développeur front-end, passionné de mon métier mais aussi de Design, du Cloud, de la Photographie... # add description
+social-twitter: thomasrumas # add your Twitter handle
+social-facebook: rumasthomas # add your Facebook handle
+social-github: ThomasRumas # add your Github handle
+social-linkedin: thomas-rumas-6581a16b # add your Linkedin handle
+#social-email: # add your Email address
+
+# Disqus
+discus-identifier: thomasrumas # add your discus identifier
+
+# Tracker
+analytics: # Google Analytics
+
+# Build Settings
+markdown: kramdown
+plugins:
+  - jekyll-sitemap
+  - jekyll-paginate
+  - jemoji
+
+paginate: 8
+paginate_path: "/page/:num"
+
+exclude: ["node_modules", "gulpfile.js", "package.json", "yarn.lock"]
