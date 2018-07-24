@@ -75,7 +75,7 @@ Voilà votre app est créée mais celle ci n'est pas encore fonctionnelle, en ef
 
 Si vous avez correctement configuré votre serveur avec Dokku, vous devriez avoir ceci dans votre terminal, Dokku va détecter que vous pushez du code sur votre instance, installer les paquets nécessaires à l'exécution de votre application, la déployer et la rendre accessible. 
 
-![Terminal]({{site.baseurl}}/assets/img/resultDokku.png)
+![Terminal]({{site.baseurl}}/assets/img/resultDokku.PNG)
 
 ## En conclusion ##
 
