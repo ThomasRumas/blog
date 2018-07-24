@@ -1,0 +1,105 @@
+---
+layout: post
+title: Créer son environnement de déployement avec Dokku 
+date: 2018-07-24 13:00:00 +0300
+description: Installation de son propre PaaS (heroku-like) #Add post description (optional)
+img: dokku.png # Add image post (optional)
+fig-caption: # Add figcaption (optional)
+tags: [PaaS, Docker, Dokku, Heroku, Cloud]
+---
+Salut à tous, aujourd'hui je vais vous expliquer comment installer son heroku-like afin de déployer plus facilement vos applications. 
+
+Heroku est un service de type PaaS qui permet de faciliter la vie aux développeurs dans le déploiement de leurs applications, quelles soient de type NodeJS, Ruby, PHP, Python... 
+
+En effet ce type de service prend tout son intérêt dès lors où ne nous voulons pas perdre de temps avec le déploiement de nos applications ou si nous n'avons pas les compétences nécessaires en administration système pour installer l'ensemble des softs/outils nécessaires à l'installation de notre application. 
+
+Là vous allez me dire, *"Mais Thomas si Heroku propose déjà ce service, pourquoi on irait créer son propre PaaS ?"*, et bien la réponse est assez simple, Heroku est pratique mais le coût d'une instance peut vite grimper dès lors que l'on utilise des applications assez gourmande ou tout simplement si nous voulons réduire le coût de notre infrastructure actuelle. Nous verrons aussi pourquoi il est intéressant d'installer son propre PaaS sur sa machine de développement afin de ne plus se soucier de l'installation des différents services/softs/outils nécessaires lors de la création d'un nouveau projet. 
+
+## Première étape : Installation de Docker ##
+
+[Docker](https://www.docker.com/ "Docker") est un outil très pratique dont vous avez déjà entendu parler, voici une définition que l'on pourrait donner à cet outil : 
+
+*Docker est un programme open source qui permet l'intégration d'une application et de ses dépendances sous la forme d'un conteneur Linux.
+La virtualisation par le biais de conteneurs isole les applications les unes des autres sur un système d'exploitation commun. Cette approche simplifie la mise à disposition de programmes, car elle permet d'exécuter les applications dans n'importe quel environnement, tant physique que virtuel.*
+
+Si vous êtes sur un système de type Ubuntu, l'installation de Docker est assez simpliste et il vous suffira uniquement de taper ces lignes de commandes :
+
+`sudo apt-get install docker`
+
+Pour Windows, Mac OS X ou bien une distribution Linux autre qu'Ubuntu, je vous invite à aller voir sur [la documentation officielle de Docker](https://docs.docker.com/ "Documentation Docker"). 
+
+Voilà, nous avons Docker d'installé, il est temps pour nous de découvrir les joies du PaaS. 
+
+## Seconde étape : Installation de Dokku ##
+
+[Dokku](http://dokku.viewdocs.io/dokku/ "Dokku") est une solution open-source qui permet comme son nom l'indique de créer son propre Heroku sous Docker. C'est cet outil que nous allons utiliser aujourd'hui car il est animé par une communauté très active et il est facile de trouver de l'aide/astuce. Il existe bien évidemment des solutions alternatives comme [CaptainDuckDuck](https://captainduckduck.com/ "CaptainDuckDuck"), peut-être que je m'y intéresserait plus tard. 
+
+#### Installation de Dokku ####
+
+
+Pour installer Dokku, rien de plus simple, si vous êtes sur une distribution basée sur Debian, il vous suffit de renseigner ces deux lignes de commande dans votre Terminal préféré : 
+
+* `wget https://raw.githubusercontent.com/dokku/dokku/v0.12.10/bootstrap.sh;`
+* `sudo DOKKU_TAG=v0.12.10 bash bootstrap.sh`
+
+Vous verrez normalement une procédure d'installation se lancer, il suffit de patienter et laisser le script s'éxécuter.
+
+Une fois l'installation fini, rendez-vous sur votre navigateur web et taper l'adresse IP de votre machine/serveur ou bien tout simplement `localhost` dans la barre d'addresse.
+
+#### Configuration de Dokku ####
+
+Maintenant que Dokku est installé et lancé sur notre machine, nous pouvons commencer la configuration de ce dernier : 
+
+* Renseigné dans le textarea **Public Key** votre clef publique qui permettra d'administrer votre PaaS Dokku. 
+* Choissisez le hostname que vous souhaitez donner à votre Dokku, ceci sera utile pour interroger nos applications. 
+
+Une fois fait, vous serez redirigé vers la documentation officielle de Dokku qui vous explique comment déployer une application, mais nous allons aussi le voir ici en se basant sur la documentation fournie. 
+
+#### Déploiement de notre première application  
+
+On y est, le moment tant attendu est arrivé, nous allons déployer notre première application sur notre PaaS fraichement configuré \o/ ! 
+
+Pour commencer, nous allons utiliser depuis le dépôt git d'Heroku une application basique Ruby On Rails pour vous indiquer comment lancer nos applications sous Dokku : 
+
+* On récupère les fichiers sources : `git clone https://github.com/heroku/ruby-rails-sample.git`
+* On se connecte à son serveur Dokku en SSH et on tape cette commande pour créer notre application : `dokku apps:create ruby-rails-sample`, ici la première partie permet de demander à Dokku la création d'une application avec la commande `dokku apps:create` ensuite nous venous préciser le nom de notre application ici `ruby-rails-sample`. 
+
+Voilà votre app est créée mais celle ci n'est pas encore fonctionnelle, en effet l'application que nous souhaitons lancer nécéssite une base de données PostgreSQL, pour ce faire nous allons lancer une instance PostgreSQL que nous allons associée à notre application `ruby-rails-sample`. Allez c'est partit ! 
+
+* Nous allons installer un [plugin](http://dokku.viewdocs.io/dokku/community/plugins/#official-plugins-beta "Plugins Dokku") PostgreSQL : `sudo dokku plugin:install https://github.com/dokku/dokku-postgres.git`
+* Une fois le plugin installer, nous allons donc lancer une instance de PostgreSQL : `dokku postgres:create rails-database`. Vous remarquerez ici que nous utilisons `dokku:postgres` et non plus `dokku:apps create` comme précédemment car nous passons par le plugin et non pas par une commande native de Dokku. 
+* Nous allons associé notre application `ruby-rails-sample` à notre instance PostgreSQL : `dokku postgres:link rails-database ruby-rails-sample`. 
+* Maintenant ajoutons un remote à notre dépôt git vers notre service Dokku : `git remote add dokku dokku@<votre-domaine>:ruby-rails-sample`
+* Pushons le code sur ce remote à l'aide de la ligne : `git push dokku master`
+
+
+Si vous avez correctement configuré votre serveur avec Dokku, vous devriez avoir ceci dans votre terminal, Dokku va détecter que vous pushez du code sur votre instance, installer les paquets nécessaires à l'exécution de votre application, la déployer et la rendre accessible. 
+
+![Terminal](../assets/img/resultDokku.png)
+
+## En conclusion ##
+
+Et voilà, vous venez d'apprendre comment déployer votre application sur votre propre service PaaS à l'aide de Dokku, vous pouvez donc maintenant vous concentrer sur votre application plutôt que sur son déploiement, ici nous avons juste découvert comment démarrer avec Dokku et je vous invite à regarder la [documentation](http://dokku.viewdocs.io/dokku/getting-started/installation/ "Documentation Dokku"). 
+
+L'intérêt d'une telle solution c'est que par exemple si vous installer localement un service tel que Dokku sur votre machine de développement, vous n'avez plus besoin d'installer Apache, PHP, MySQL, Postgre... Mais uniquement Docker, Dokku et pousser votre code sur la branche afin de tester votre application, site web... 
+
+Bien sûr, vous pouvez aussi mettre ça sur un serveur et/ou une instance cloud chez un provider, la procédure sera identique. 
+
+Un autre intérêt de ce type de solution sera la possibilité de coupler ça avec du **Continious Deployement** (Intégration continue) depuis un dépôt git afin de déployer par exemple une stagging, une preprod voir une prod si votre prod fonctionne sous Dokku. 
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
