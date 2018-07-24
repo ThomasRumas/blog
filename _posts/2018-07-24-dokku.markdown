@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Créer son environnement de déployement avec Dokku 
+title: Créer son environnement PaaS avec Dokku 
 date: 2018-07-24 13:00:00 +0300
 description: Installation de son propre PaaS (heroku-like) #Add post description (optional)
 img: dokku.png # Add image post (optional)
