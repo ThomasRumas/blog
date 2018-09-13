@@ -30,7 +30,7 @@ Vous me direz que pour tester les performances de ses pages webs, il faut des ou
 
 Ces outils sont open source et maintenus par une forte communauté afin de répondre aux derniers critères de Google en terme de web performance et d'accessibilité. Je ne rentrerai pas en détail dans l'utilisation de ces outils, la documentation est très bien expliqué quant à leur utilisation et leur intérêt. 
 
-Ici nous allons plutôt répondre à un besoin "d'entreprise", tester localement des pages webs non accessible depuis l'extérieur d'un réseau privé. Pour ce faire, je vous mets à disposition un lien vers mon dépôt git où vous avez la possibilité de tester localement un site web à l'aide de Webpagetest ou bien Speedtest.io [WebPerformance](https://github.com/ThomasRumas/WebPerformance "WebPerformance"). Vous trouverez à ce lien le README explicatif quant à l'utilisation de ces ressources. 
+Ici nous allons plutôt répondre à un besoin "d'entreprise", tester localement des pages webs non accessible depuis l'extérieur d'un réseau privé. Pour ce faire, je vous mets à disposition un lien vers mon dépôt git où vous avez la possibilité de tester localement un site web à l'aide de Webpagetest ou bien Speedtest.io [WebPerformance](https://github.com/ThomasRumas/WebPerformance "WebPerformance"), vous trouverez à ce lien le README explicatif quant à l'utilisation de ces ressources. 
 
 Vous aurez besoin de Docker, de NodeJS, de Firefox et/ou Chrome afin de pouvoir exécuter ces scripts, mais vous ferez l'installation des prérequis est simple, il suffit de suivre la documentation officielle de chaque ressource. 
 
