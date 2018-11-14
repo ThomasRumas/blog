@@ -96,7 +96,7 @@ Vous êtes prêt ? Le plus difficile est derrière nous, maintenant, quelques co
 * `docker build --tag wordpress .`
 * `docker run -p 8080:80 -v ${pwd}:/var/www/html --link mysql-instance:mysql -e branch=master -e git=https://github.com/WordPress/WordPress.git wordpress` 
 
-Notre première commande va créer notre image Docker sur notre machine afin que l'on puisse l'utiliser sur notre machine. La seconde commande va lancer une instance Docker en se basant sur notre image précémment compilée, voyons ensemble ce que font les paramètres : 
+Notre première commande va créer notre image Docker sur notre machine afin que l'on puisse l'utilise. La seconde commande va lancer une instance Docker en se basant sur notre image précédemment compilée, voyons ensemble ce que font les paramètres : 
 
 * `-p 8080:80` va nous permettre d'envoyer l'ensemble des requêtes faites sur notre machine sur le port 8080 vers le port 80 de notre instance Docker
 * `-v ${pwd}:/var/www/html` va nous permettre de monter le contenu du répertoire `/var/www/html` dans le dossier courant où nous avons lancer notre instance, libre à vous de modifier ce chemin comme bon vous semble
