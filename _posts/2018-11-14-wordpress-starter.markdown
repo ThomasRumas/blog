@@ -9,7 +9,7 @@ tags: [Wordpress, Docker, Continious Integration]
 ---
 Wordpress est le CMS le plus utilisé actuellement au monde du fait de sa communauté active, sa richesse de thème et de plugin... De ce fait, il est utilisé par beaucoup de monde pour déployer/développer de nombreux sites internet. Cependant avant de pouvoir développer sur Wordpress il faut bien souvent configurer sa machine avec un serveur Nginx/Apache, installer PHP, MySQL... Ce qui n'est pas à la portée de n'importe quel développeur front ou back, et oui à chacun sa spécialité et son métier. 
 
-Nous allons donc voir ici comment instancier une instance de Wordpress avec l'ensemble des pré-requis nécessaire pour un fonctionnement sur un machine de développement. Mais ne vous en faites pas si votre site Wordpress est versionné sous git et que votre base de données est accessible, vous pourrez suivre ce tutoriel afin de déployer plus efficacement votre Wordpress. 
+Nous allons donc voir ici comment instancier un site Wordpress avec l'ensemble des pré-requis nécessaire pour un fonctionnement sur un machine de développement. Mais ne vous en faites pas si votre site Wordpress est versionné sous git et que votre base de données est accessible, vous pourrez suivre ce tutoriel afin de déployer plus efficacement votre Wordpress. 
 
 ## Le choix de Docker
 Comme je vous ai déjà expliqué dans un [précédent article](https://thomas.rumas.fr/dokku/), Docker est simple et facile à installer, il ne nécessite pas de grandes connaissances en administration système pour qu'un utilisateur puisse commencer à utiliser une image Docker pour travailler. 
@@ -85,7 +85,7 @@ Vous vous souvenez de nos variables d'environnement ? Voilà à quoi ces derniè
 
 La condition ici permet de voir si le dossier `/var/www/html` est vide, si c'est le cas, notre Docker va aller chercher les sources sur le dépôt git que nous aurons fourni à l'initialisation de notre image. 
 
-Enfin la ligne `apachectl -DFOREGROUND` permet de faire tourner notre service Apache en fond afin que notre Docker ne s'éteint pas une fois l'ensemble des tâches effectuées. 
+Enfin la ligne `apachectl -DFOREGROUND` permet de faire tourner notre service Apache en tâche de fond afin que notre Docker ne s'éteint pas une fois l'ensemble des tâches effectuées. 
 
 Maintenant que nous avons vu le fonctionnement de ces deux fichiers, comment cela fonctionne ? 
 
