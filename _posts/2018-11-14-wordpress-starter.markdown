@@ -36,7 +36,8 @@ ENV branch=master
 ENV git=https://github.com/WordPress/WordPress.git
 
 RUN apt update
-RUN apt install git dos2unix -y 
+RUN apt install git dos2unix -y
+RUN docker-php-ext-install pdo pdo_mysql mysqli
 
 WORKDIR /var/www/html
 
@@ -110,7 +111,7 @@ Et voilà, si vous avez respecté ces quelques étapes, en allant sur `http://lo
 
 Vous trouverez l'ensemble des sources de cet article sur mon [Github](https://github.com/ThomasRumas/wordpress-starter). Je ne manquerai pas de le mettre à jour si mes besoins évoluent afin de vous en faire profiter. 
 
-N'oubliez pas que pour Wordpress fonctionne vous avez besoin d'une base de données MySQL, pour ce faire vous pouvez aussi instancier une image MySQL à l'aide de Docker de cette façon `docker run --name mysql-instance -e MYSQL_ROOT_PASSWORD=toto -d -p 3306:3306 mysql:latest`. Ensuite utiliser n'importe quel outil vous permettant de vous connecter à un serveur MySQL pour l'administrer et créer la BDD nécessaire à l'utilisation de Wordpress. 
+N'oubliez pas que pour Wordpress fonctionne vous avez besoin d'une base de données MySQL, pour ce faire vous pouvez aussi instancier une image MySQL à l'aide de Docker de cette façon `docker run --name mysql-instance -e MYSQL_ROOT_PASSWORD=toto -d -p 3306:3306 mysql:5.7`. Ensuite utiliser n'importe quel outil vous permettant de vous connecter à un serveur MySQL pour l'administrer et créer la BDD nécessaire à l'utilisation de Wordpress. 
 
 Pour aller plus loin, nous aurions pu imaginer rappatrier une base de données sur une instance Docker MySQL afin d'avoir la base de données en locale. Cependant tout ce que vous ferez sur une BDD locale ne sera pas répercuter sur votre base de données en production et il faudra donc synchroniser les données entre ces deux bases pour que votre site puisse fonctionner. Le mieux est peut-être de déployer une base de données de développement et une base de données de production sur lesquelles on ferait redescendre la production tous les X temps afin de synchroniser nos environnements. 
 
