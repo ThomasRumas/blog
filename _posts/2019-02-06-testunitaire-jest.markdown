@@ -1,9 +1,9 @@
 ---
 layout: post
 title: Améliorer la qualité de son code JS avec les Tests Unitaires 
-date: 2018-06-18 13:00:00 +0300
+date: 2019-02-05 13:00:00 +0300
 description: Nous découvrirons ici comment améliorer et péréniser son code JS avec l'utilisation de Jest # Add post description (optional)
-img: javascript.jpg # Add image post (optional)
+img: javascript.png # Add image post (optional)
 fig-caption: # Add figcaption (optional)
 tags: [Javascript]
 ---
