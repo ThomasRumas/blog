@@ -42,7 +42,8 @@ Vous pouvez voir que dans cette classe, le constructeur appelle une fonction ave
 
 C'est là qu'intervient l'idée de mock au niveau de notre classe afin que lors de l’exécution de nos tests, nous n'attendions pas après la résolution de la requête AJAX qui de plus si elle est en erreur peut biaiser la qualité du test. 
 
-`class Product {
+```
+class Product {
     constructor(prmUrl) {
         this.getProduct(prmUrl).then((response) => {
             this.product = response; 
@@ -81,13 +82,15 @@ C'est là qu'intervient l'idée de mock au niveau de notre classe afin que lors 
     }
 }
 
-module.exports = Product;`
+module.exports = Product;
+```
 
 
 ### "Mockons" (nous ?) une classe afin de l'utiliser lors de nos tests : 
 Comme indiqué, pour que Jest comprenne que nous allons utiliser l'instance "mock" de notre classe, nous allons créer dans le dossier `__mocks__` un nouveau fichier contenant le même nom  que notre classe précédemment créée. Ici vous pouvez constater que nous avons modifié la fonction getProduct() de notre classe afin qu'elle nous retourne uniquement ce que le résultat de la requête AJAX devrait être en cas de succès. 
 
-`const getProductReturn = {
+```
+const getProductReturn = {
     name: "Ponceuse",
     quantity: 1
 }
@@ -120,7 +123,8 @@ MyProduct.getProduct = jest.fn(() => Promise.resolve(
     }
 ).then((response) => {
     expect(response.name).toBe('Ponceuse'); 
-}));`
+}));
+```
 
 
 ### Créons notre premier fichier de test 
@@ -128,7 +132,8 @@ Nous y voilà enfin, nous avons préparé notre classe à être testée, on y va
 
 Pour ce faire nous allons créer un fichier de test dans le dossier `__tests__` de notre arborescence avec comme nomenclature `nomDuFichierATester.test.js`. Les tests sont assez simple au vue de notre classe, je vous laisse donc parcourir le fichier afin de comprendre par vous même ce que les tests renvoient, n'oubliez pas d'éplucher la documentation afin de bien comprendre l'intérêt de l'outil : [Jest](https://jestjs.io/docs/en/getting-started)
 
-`const Product = require('../product.class'); //On importe product.class à notre projet de test
+```
+const Product = require('../product.class'); //On importe product.class à notre projet de test
 jest.mock('../product.class'); //On indique à jest qu'il faut utiliser la classe se trouvant dans le dossier __mocks__ lorsque l'on appelle une fonction provenant de notre classe Product
 
 var MyProduct = new Product("https://www.example.com/getProduct"); 
@@ -215,7 +220,8 @@ test('How many times myFunction is called on loop', () => {
     } 
 
     expect(myFunction).toHaveBeenCalledTimes(4); 
-});`
+});
+```
 
 
 
@@ -229,7 +235,8 @@ Il est tout à fait possible aussi de faire ce que l'on appelle du test fonction
 * On test avec jest si on a bien la bonne valeur
 
 
-`test('Use Jest on DOM elemnt', () => {
+```
+test('Use Jest on DOM elemnt', () => {
     document.body.innerHTML =
     '<div>' +
     '  <input id="quantity" type="text" value="Michel"/>' +
@@ -253,7 +260,8 @@ Il est tout à fait possible aussi de faire ce que l'on appelle du test fonction
     eventFire(document.getElementById('button'), 'click');
 
     expect(document.getElementById('quantity').value).toEqual('8'); 
-});`
+});
+```
 
 
 ### Débugger un TU 
