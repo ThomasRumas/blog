@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const allPosts = await getCollection('blog');
+
+// Aggregate tags with post counts
+const tagCounts = new Map<string, number>();
+allPosts.forEach((post) => {
+  post.data.tags.forEach((tag) => {
+    const lowerTag = tag.toLowerCase();
+    tagCounts.set(lowerTag, (tagCounts.get(lowerTag) || 0) + 1);
+  });
+});
+
+const sortedTags = Array.from(tagCounts.entries())
+  .sort((a, b) => b[1] - a[1]);
+---
+
+<BaseLayout title="Tags">
+  <Header />
+  <main class="container">
+    <h1 class="page-title">Tags</h1>
+    <div class="tags-grid">
+      {sortedTags.map(([tag, count]) => (
+        <a href={`/tags/${tag}`} class="tag-item">
+          <span class="tag-name">#{tag}</span>
+          <span class="tag-count">{count} {count === 1 ? 'post' : 'posts'}</span>
+        </a>
+      ))}
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+  }
+
+  .tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .tag-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: var(--color-card-bg);
+  }
+
+  .tag-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: var(--color-accent);
+  }
+
+  .tag-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .tag-count {
+    font-size: 0.875rem;
+    color: var(--color-gray);
+  }
+
+  @media (max-width: 768px) {
+    .tags-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+  }
+</style>
