@@ -19,7 +19,7 @@ const shareTitle = encodeURIComponent(title);
     rel="noopener noreferrer"
     class="share-button"
   >
-    Twitter
+    X
   </a>
   <a 
     href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
@@ -49,7 +49,7 @@ const shareTitle = encodeURIComponent(title);
 
   .share-button {
     padding: 0.5rem 1rem;
-    background-color: #f5f5f5;
+    background-color: var(--color-tag-bg);
     border-radius: 6px;
     font-size: 0.9rem;
     color: var(--color-text);
