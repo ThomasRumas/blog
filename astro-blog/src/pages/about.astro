@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../config';
+---
+
+<BaseLayout title="About">
+  <Header />
+  <main class="container">
+    <article class="about">
+      <div class="about-header">
+        <img src={SITE.authorImage} alt={SITE.author} class="author-image" />
+        <h1>{SITE.author}</h1>
+      </div>
+      
+      <div class="about-content">
+        <p>{SITE.aboutAuthor}</p>
+        <p>{SITE.description}</p>
+        
+        <div class="social-links">
+          <h2>Connect with me</h2>
+          <ul>
+            <li>
+              <a href={`https://twitter.com/${SITE.social.twitter}`} target="_blank" rel="noopener noreferrer">
+                Twitter: @{SITE.social.twitter}
+              </a>
+            </li>
+            <li>
+              <a href={`https://github.com/${SITE.social.github}`} target="_blank" rel="noopener noreferrer">
+                GitHub: @{SITE.social.github}
+              </a>
+            </li>
+            <li>
+              <a href={`https://linkedin.com/in/${SITE.social.linkedin}`} target="_blank" rel="noopener noreferrer">
+                LinkedIn: {SITE.social.linkedin}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </article>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  .about {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .about-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .author-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    object-fit: cover;
+    border: 3px solid var(--color-border);
+  }
+
+  .about-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .about-content {
+    line-height: 1.7;
+  }
+
+  .about-content p {
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+  }
+
+  .social-links {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .social-links h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .social-links ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .social-links li {
+    margin-bottom: 0.75rem;
+  }
+
+  .social-links a {
+    color: var(--color-accent);
+    font-size: 1rem;
+  }
+
+  .social-links a:hover {
+    text-decoration: underline;
+  }
+</style>

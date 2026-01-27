@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PostCard from '../../components/PostCard.astro';
+
+export const getStaticPaths = (async () => {
+  const allPosts = await getCollection('blog');
+  const allTags = new Set<string>();
+  
+  allPosts.forEach((post) => {
+    post.data.tags.forEach((tag) => {
+      allTags.add(tag.toLowerCase());
+    });
+  });
+
+  return Array.from(allTags).map((tag) => {
+    const filteredPosts = allPosts
+      .filter((post) => 
+        post.data.tags.some((t) => t.toLowerCase() === tag)
+      )
+      .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+    
+    return {
+      params: { tag },
+      props: { posts: filteredPosts, tag },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { posts, tag } = Astro.props;
+---
+
+<BaseLayout title={`Posts tagged with "${tag}"`}>
+  <Header />
+  <main class="container">
+    <h1 class="page-title">
+      Posts tagged with <span class="tag-highlight">#{tag}</span>
+    </h1>
+    <p class="post-count">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+    
+    <div class="posts-grid">
+      {posts.map((post) => (
+        <PostCard
+          title={post.data.title}
+          date={post.data.date}
+          description={post.data.description}
+          tags={post.data.tags}
+          img={post.data.img}
+          slug={post.slug}
+        />
+      ))}
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .tag-highlight {
+    color: var(--color-accent);
+  }
+
+  .post-count {
+    color: var(--color-gray);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
