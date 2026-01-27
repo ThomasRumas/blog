@@ -1,0 +1,217 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
+import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
+import { formatDate, getReadingTime } from '../../utils/helpers';
+
+export const getStaticPaths = (async () => {
+  const talks = await getCollection('talks');
+  return talks.map((talk) => ({
+    params: { slug: talk.slug },
+    props: { talk },
+  }));
+}) satisfies GetStaticPaths;
+
+const { talk } = Astro.props;
+const { Content } = await talk.render();
+const readingTime = getReadingTime(talk.body);
+const talkUrl = `${Astro.site}talks/${talk.slug}`;
+const imageUrl = talk.data.img ? `/img/${talk.data.img}` : undefined;
+---
+
+<BaseLayout 
+  title={talk.data.title} 
+  description={talk.data.description}
+  image={imageUrl}
+>
+  <Header />
+  <main class="container">
+    <article class="post">
+      {!talk.data.youtubeUrl && talk.data.img && (
+        <div class="post-hero">
+          <img src={`/img/${talk.data.img}`} alt={talk.data.title} />
+        </div>
+      )}
+      
+      <header class="post-header">
+        <h1 class="post-title">{talk.data.title}</h1>
+        <div class="post-meta">
+          <time datetime={talk.data.date.toISOString()}>
+            {formatDate(talk.data.date)}
+          </time>
+          <span class="separator">•</span>
+          <span>{readingTime}</span>
+          {talk.data.event && (
+            <>
+              <span class="separator">•</span>
+              <span>{talk.data.event}</span>
+            </>
+          )}
+          {talk.data.location && (
+            <>
+              <span class="separator">•</span>
+              <span>📍 {talk.data.location}</span>
+            </>
+          )}
+        </div>
+      </header>
+
+      {talk.data.youtubeUrl && (
+        <YouTubeEmbed url={talk.data.youtubeUrl} />
+      )}
+
+      <div class="post-content">
+        <Content />
+      </div>
+
+      {talk.data.slides && (
+        <div class="slides-link">
+          <a href={talk.data.slides} target="_blank" rel="noopener noreferrer">
+            📊 View Slides
+          </a>
+        </div>
+      )}
+
+      <div class="post-tags">
+        {talk.data.tags.map((tag) => (
+          <a href={`/tags/${tag.toLowerCase()}`} class="tag">#{tag}</a>
+        ))}
+      </div>
+
+      <ShareButtons title={talk.data.title} url={talkUrl} />
+    </article>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  .post {
+    margin-bottom: 2rem;
+  }
+
+  .post-hero {
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .post-hero img {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+  }
+
+  .post-header {
+    margin-bottom: 2rem;
+  }
+
+  .post-title {
+    font-size: clamp(2rem, 5vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    color: var(--color-text);
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+  }
+
+  .separator {
+    color: var(--color-light-gray);
+  }
+
+  .post-content {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+
+  .post-content :global(h2) {
+    margin-top: 2em;
+    margin-bottom: 0.75em;
+    font-size: 1.75rem;
+  }
+
+  .post-content :global(h3) {
+    margin-top: 1.75em;
+    margin-bottom: 0.5em;
+    font-size: 1.375rem;
+  }
+
+  .post-content :global(img) {
+    margin: 2rem auto;
+    border-radius: 8px;
+  }
+
+  .post-content :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .slides-link {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .slides-link a {
+    display: inline-block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    transition: transform 0.2s ease;
+  }
+
+  .slides-link a:hover {
+    transform: scale(1.05);
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    background-color: var(--color-tag-bg);
+    border-radius: 16px;
+    font-size: 0.9rem;
+    color: var(--color-gray);
+    transition: background-color 0.2s ease;
+  }
+
+  .tag:hover {
+    background-color: var(--color-tag-hover-bg);
+    color: var(--color-text);
+  }
+
+  @media (max-width: 600px) {
+    .post-hero img {
+      max-height: 300px;
+    }
+  }
+</style>

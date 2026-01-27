@@ -7,19 +7,21 @@ import Footer from '../../components/Footer.astro';
 import PostCard from '../../components/PostCard.astro';
 
 export const getStaticPaths = (async () => {
-  const allPosts = await getCollection('blog');
+  const blogPosts = await getCollection('blog');
+  const talks = await getCollection('talks');
+  const allContent = [...blogPosts, ...talks];
   const allTags = new Set<string>();
   
-  allPosts.forEach((post) => {
-    post.data.tags.forEach((tag) => {
+  allContent.forEach((item) => {
+    item.data.tags.forEach((tag) => {
       allTags.add(tag.toLowerCase());
     });
   });
 
   return Array.from(allTags).map((tag) => {
-    const filteredPosts = allPosts
-      .filter((post) => 
-        post.data.tags.some((t) => t.toLowerCase() === tag)
+    const filteredPosts = allContent
+      .filter((item) => 
+        item.data.tags.some((t) => t.toLowerCase() === tag)
       )
       .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
     
@@ -37,9 +39,9 @@ const { posts, tag } = Astro.props;
   <Header />
   <main class="container">
     <h1 class="page-title">
-      Posts tagged with <span class="tag-highlight">#{tag}</span>
+      Content tagged with <span class="tag-highlight">#{tag}</span>
     </h1>
-    <p class="post-count">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+    <p class="post-count">{posts.length} {posts.length === 1 ? 'item' : 'items'}</p>
     
     <div class="posts-grid">
       {posts.map((post) => (
@@ -50,6 +52,7 @@ const { posts, tag } = Astro.props;
           tags={post.data.tags}
           img={post.data.img}
           slug={post.slug}
+          collection={post.collection}
         />
       ))}
     </div>

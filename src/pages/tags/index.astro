@@ -4,12 +4,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 
-const allPosts = await getCollection('blog');
+const blogPosts = await getCollection('blog');
+const talks = await getCollection('talks');
+const allContent = [...blogPosts, ...talks];
 
 // Aggregate tags with post counts
 const tagCounts = new Map<string, number>();
-allPosts.forEach((post) => {
-  post.data.tags.forEach((tag) => {
+allContent.forEach((item) => {
+  item.data.tags.forEach((tag) => {
     const lowerTag = tag.toLowerCase();
     tagCounts.set(lowerTag, (tagCounts.get(lowerTag) || 0) + 1);
   });
@@ -27,7 +29,7 @@ const sortedTags = Array.from(tagCounts.entries())
       {sortedTags.map(([tag, count]) => (
         <a href={`/tags/${tag}`} class="tag-item">
           <span class="tag-name">#{tag}</span>
-          <span class="tag-count">{count} {count === 1 ? 'post' : 'posts'}</span>
+          <span class="tag-count">{count} {count === 1 ? 'item' : 'items'}</span>
         </a>
       ))}
     </div>
