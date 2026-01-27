@@ -26,21 +26,20 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
-          cache-dependency-path: './astro-blog/package-lock.json'
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
       - name: Install dependencies
-        run: cd astro-blog && npm ci
+        run: npm ci
         
       - name: Build with Astro
-        run: cd astro-blog && npm run build
+        run: npm run build
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./astro-blog/dist
+          path: ./dist
 
   deploy:
     environment:
