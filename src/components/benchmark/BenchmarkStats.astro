@@ -1,0 +1,108 @@
+---
+import type { RunStats } from '../../utils/benchmark';
+
+interface Props {
+  stats: RunStats;
+}
+
+const { stats } = Astro.props;
+
+const passRateLabel = (stats.overallPassRate * 100).toFixed(1) + '%';
+
+const chips = [
+  {
+    value: stats.total,
+    label: 'Tasks',
+    cls:   '',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5v-9zm1.5 0v9h9v-9h-9z"/></svg>`,
+  },
+  {
+    value: stats.success,
+    label: 'Success',
+    cls:   'chip-success',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm3.857-8.809a.5.5 0 0 0-.808-.589l-3.423 4.705-1.88-1.881a.5.5 0 1 0-.707.707l2.5 2.5a.5.5 0 0 0 .758-.06l3.56-4.882z" clip-rule="evenodd"/></svg>`,
+  },
+  {
+    value: stats.partial,
+    label: 'Partial',
+    cls:   'chip-partial',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM5.25 7.25a.75.75 0 0 0 0 1.5h5.5a.75.75 0 0 0 0-1.5h-5.5z" clip-rule="evenodd"/></svg>`,
+  },
+  {
+    value: stats.failure,
+    label: 'Failure',
+    cls:   'chip-failure',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm2.78-4.22a.75.75 0 0 1-1.06 1.06L8 11.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L6.94 10 5.22 8.28a.75.75 0 0 1 1.06-1.06L8 8.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L9.06 10l1.72 1.72z" clip-rule="evenodd"/></svg>`,
+  },
+  {
+    value: passRateLabel,
+    label: 'Pass Rate',
+    cls:   'chip-rate',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.5 1.5a.5.5 0 0 0-1 0v1.5h-1a.5.5 0 0 0 0 1H8v1.25a3.5 3.5 0 1 0 1 0V4h1a.5.5 0 0 0 0-1h-1V1.5zm.5 5.75a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/></svg>`,
+  },
+] as const;
+---
+
+<div class="run-stats" role="list" aria-label="Run statistics">
+  {chips.map(chip => (
+    <div class={`stat-chip ${chip.cls}`} role="listitem">
+      <span class="chip-icon" set:html={chip.icon} />
+      <span class="chip-num">{chip.value}</span>
+      <span class="chip-lbl">{chip.label}</span>
+    </div>
+  ))}
+</div>
+
+<style>
+  .run-stats {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    background: var(--color-tag-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 100px;
+    font-size: 0.8125rem;
+  }
+
+  .chip-icon {
+    display: inline-flex;
+    align-items: center;
+    width: 0.9rem;
+    height: 0.9rem;
+    flex-shrink: 0;
+    color: var(--color-gray);
+  }
+
+  .chip-icon :global(svg) { width: 100%; height: 100%; }
+
+  .chip-num {
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-text);
+  }
+
+  .chip-lbl {
+    font-size: 0.75rem;
+    color: var(--color-gray);
+  }
+
+  /* Colored variants */
+  .chip-success .chip-icon { color: #34C759; }
+  .chip-success .chip-num  { color: #34C759; }
+
+  .chip-partial .chip-icon { color: #FF9500; }
+  .chip-partial .chip-num  { color: #FF9500; }
+
+  .chip-failure .chip-icon { color: #FF3B30; }
+  .chip-failure .chip-num  { color: #FF3B30; }
+
+  .chip-rate .chip-icon    { color: var(--color-accent); }
+  .chip-rate .chip-num     { color: var(--color-accent); }
+</style>

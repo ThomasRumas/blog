@@ -1,0 +1,617 @@
+---
+// No props — this component is purely informational static content
+---
+
+<section
+  class="methodology"
+  id="methodology"
+  aria-labelledby="methodology-heading"
+>
+  <div class="method-header">
+    <h2 id="methodology-heading">
+      <span class="method-icon" aria-hidden="true">
+        <!-- Beaker / science icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8.5 3.528v4.644c0 .722-.35 1.399-.938 1.819l-2.435 1.69A1.25 1.25 0 0 0 4.5 12.72v.28c0 .69.56 1.25 1.25 1.25h8.5c.69 0 1.25-.56 1.25-1.25v-.28c0-.425-.219-.82-.627-1.04l-2.435-1.69A2.25 2.25 0 0 1 11.5 8.172V3.528A2.755 2.755 0 0 0 10 3.25a2.755 2.755 0 0 0-1.5.278zM8 2.118A4.25 4.25 0 0 0 6.25 3.75v4.422l-2.435 1.69A3.75 3.75 0 0 0 2 13.5v.281A2.75 2.75 0 0 0 4.75 16.5h10.5A2.75 2.75 0 0 0 18 13.5V13a3.75 3.75 0 0 0-1.564-3.036l-2.436-1.69V3.75A4.25 4.25 0 0 0 12 2.118a4.25 4.25 0 0 0-4 0z"
+            clip-rule="evenodd"></path>
+        </svg>
+      </span>
+      How I benchmark LLMs
+    </h2>
+    <p class="method-lead">
+      All results on this page are produced locally, on my own hardware, under
+      reproducible conditions. Here is exactly how.
+    </p>
+  </div>
+
+  <div class="method-grid">
+    <!-- ── Hardware ─────────────────────────────────────────────────── -->
+    <div class="method-card">
+      <div class="card-title">
+        <span class="card-icon" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              d="M14 6H6a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM6 4a4 4 0 0 0-4 4v4a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V8a4 4 0 0 0-4-4H6z"
+            ></path>
+            <path d="M9 10a1 1 0 1 1 2 0 1 1 0 0 1-2 0z"></path>
+          </svg>
+        </span>
+        Hardware
+      </div>
+      <ul class="spec-list">
+        <li>
+          <span class="spec-icon spec-cpu" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                d="M14 6H6a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM6 4a4 4 0 0 0-4 4v4a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V8a4 4 0 0 0-4-4H6z"
+              ></path><path d="M9 10a1 1 0 1 1 2 0 1 1 0 0 1-2 0z"></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">CPU</span>
+            <span class="spec-value">AMD Ryzen 7 9800X3D</span>
+          </div>
+        </li>
+        <li>
+          <span class="spec-icon spec-gpu" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                fill-rule="evenodd"
+                d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5zm12 0H5v8h10V5z"
+                clip-rule="evenodd"></path><path
+                d="M6 14h8v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-1z"></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">GPU</span>
+            <span class="spec-value">Nvidia RTX 5080 · 16 GB VRAM</span>
+          </div>
+        </li>
+        <li>
+          <span class="spec-icon spec-ram" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                d="M2 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6zm3 1v6h2V7H5zm4 0v6h2V7H9zm4 0v6h2V7h-2z"
+              ></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">RAM</span>
+            <span class="spec-value">32 GB DDR5</span>
+          </div>
+        </li>
+        <li>
+          <span class="spec-icon spec-os" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                fill-rule="evenodd"
+                d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75zm0 10.5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75zM2 10a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 2 10z"
+                clip-rule="evenodd"></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">OS</span>
+            <span class="spec-value">CachyOS (Arch-based)</span>
+          </div>
+        </li>
+        <li>
+          <span class="spec-icon spec-runtime" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                fill-rule="evenodd"
+                d="M2 5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5zm3.293 1.293a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L7.586 10 5.293 7.707a1 1 0 0 1 0-1.414z"
+                clip-rule="evenodd"></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">Inference runtime</span>
+            <span class="spec-value">
+              <a
+                href="https://github.com/ikawrakow/ik_llama.cpp"
+                target="_blank"
+                rel="noopener noreferrer">ik_llama.cpp</a
+              >
+              compiled with CUDA
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ── Test conditions ──────────────────────────────────────────── -->
+    <div class="method-card">
+      <div class="card-title">
+        <span class="card-icon" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </span>
+        Test conditions
+      </div>
+      <ul class="spec-list">
+        <li>
+          <span class="spec-icon" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75z"
+              ></path><path
+                d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z"
+              ></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">Dataset</span>
+            <span class="spec-value">
+              <a
+                href="https://www.tbench.ai/benchmarks/terminal-bench-2"
+                target="_blank"
+                rel="noopener noreferrer">Terminal Bench 2</a
+              >
+              — software engineering tasks only
+            </span>
+          </div>
+        </li>
+        <li>
+          <span class="spec-icon" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                fill-rule="evenodd"
+                d="M2 5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5zm3.293 1.293a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L7.586 10 5.293 7.707a1 1 0 0 1 0-1.414z"
+                clip-rule="evenodd"></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">Framework</span>
+            <span class="spec-value">Harbor — launched via DevContainer</span>
+          </div>
+        </li>
+        <li>
+          <span class="spec-icon" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                fill-rule="evenodd"
+                d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zM5.94 5.5c.944-.945 2.2-1.5 3.56-1.5s2.616.555 3.56 1.5c.943.945 1.44 2.196 1.44 3.5s-.497 2.555-1.44 3.5c-.944.945-2.2 1.5-3.56 1.5s-2.616-.555-3.56-1.5C4.997 13.055 4.5 11.804 4.5 10.5S4.997 7.945 5.94 7z"
+                clip-rule="evenodd"></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">Isolation</span>
+            <span class="spec-value"
+              >Each task runs in a clean, isolated container</span
+            >
+          </div>
+        </li>
+        <li>
+          <span class="spec-icon" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                d="M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM1.49 15.326a.78.78 0 0 1-.358-.442 3 3 0 0 1 4.308-3.516 6.484 6.484 0 0 0-1.905 3.959c-.023.222-.014.442.025.654a4.97 4.97 0 0 1-2.07-.655zM16.44 15.98a4.97 4.97 0 0 0 2.07-.654.78.78 0 0 0 .357-.442 3 3 0 0 0-4.308-3.517 6.484 6.484 0 0 1 1.907 3.96 2.32 2.32 0 0 1-.026.654zM18 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM5.304 16.19a.844.844 0 0 1-.277-.71 5 5 0 0 1 9.947 0 .843.843 0 0 1-.277.71A6.975 6.975 0 0 1 10 18a6.974 6.974 0 0 1-4.696-1.81z"
+              ></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">Agent</span>
+            <span class="spec-value"
+              >LLM exposes an OpenAI-compatible endpoint; agent scripts interact
+              through the Harbor CLI</span
+            >
+          </div>
+        </li>
+        <li>
+          <span class="spec-icon" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              ><path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5z"
+                clip-rule="evenodd"
+              ></path></svg
+            >
+          </span>
+          <div>
+            <span class="spec-label">Time keeper</span>
+            <span class="spec-value"
+              >Each task is timed to measure execution performance, the agent
+              have only 20 minutes to do the job</span
+            >
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ── Scoring ───────────────────────────────────────────────────── -->
+    <div class="method-card method-card--wide">
+      <div class="card-title">
+        <span class="card-icon" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              d="M15.98 1.804a1 1 0 0 0-1.96 0l-.24 1.192a1 1 0 0 1-.784.785l-1.192.238a1 1 0 0 0 0 1.962l1.192.238a1 1 0 0 1 .785.785l.238 1.192a1 1 0 0 0 1.962 0l.238-1.192a1 1 0 0 1 .785-.785l1.192-.238a1 1 0 0 0 0-1.962l-1.192-.238a1 1 0 0 1-.785-.785l-.238-1.192zM6.949 5.684a1 1 0 0 0-1.898 0l-.683 2.051a1 1 0 0 1-.633.633l-2.051.683a1 1 0 0 0 0 1.898l2.051.684a1 1 0 0 1 .633.632l.683 2.051a1 1 0 0 0 1.898 0l.683-2.051a1 1 0 0 1 .633-.633l2.051-.683a1 1 0 0 0 0-1.898l-2.051-.683a1 1 0 0 1-.633-.633L6.95 5.684z"
+            ></path>
+          </svg>
+        </span>
+        Scoring rules
+      </div>
+      <div class="scoring-rules">
+        <div class="score-rule score-rule--success">
+          <span class="rule-badge">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true"
+              ><path
+                fill-rule="evenodd"
+                d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm3.857-8.809a.5.5 0 0 0-.808-.589l-3.423 4.705-1.88-1.881a.5.5 0 1 0-.707.707l2.5 2.5a.5.5 0 0 0 .758-.06l3.56-4.882z"
+                clip-rule="evenodd"></path></svg
+            >
+            Success
+          </span>
+          <span class="rule-desc"
+            >All tests in the task pass <strong>(100%)</strong></span
+          >
+        </div>
+        <div class="score-rule score-rule--partial">
+          <span class="rule-badge">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true"
+              ><path
+                fill-rule="evenodd"
+                d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM5.25 7.25a.75.75 0 0 0 0 1.5h5.5a.75.75 0 0 0 0-1.5h-5.5z"
+                clip-rule="evenodd"></path></svg
+            >
+            Partial
+          </span>
+          <span class="rule-desc"
+            >At least <strong>75%</strong> of tests pass — including error runs that
+            still meet this threshold</span
+          >
+        </div>
+        <div class="score-rule score-rule--failure">
+          <span class="rule-badge">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true"
+              ><path
+                fill-rule="evenodd"
+                d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm2.78-4.22a.75.75 0 0 1-1.06 1.06L8 11.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L6.94 10 5.22 8.28a.75.75 0 0 1 1.06-1.06L8 8.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L9.06 10l1.72 1.72z"
+                clip-rule="evenodd"></path></svg
+            >
+            Failure
+          </span>
+          <span class="rule-desc"
+            >Fewer than <strong>75%</strong> of tests pass, or the agent timed out
+            and no tests ran</span
+          >
+        </div>
+        <p class="scoring-note">
+          The <em>Pass Rate</em> shown in each run card is the weighted percentage
+          of individual test cases that passed, across all tasks in that run. A partial
+          success with an agent error shows a
+          <svg
+            class="inline-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="#FF9500"
+            aria-label="warning"
+            role="img"
+            ><path
+              fill-rule="evenodd"
+              d="M6.701 2.25c.578-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804A1.5 1.5 0 0 1 1.505 11.25l5.196-9zM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-1.5 0v-3A.75.75 0 0 1 8 4zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+              clip-rule="evenodd"></path></svg
+          >
+          tooltip with the raw error message.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Section shell ────────────────────────────────────────────── */
+  .methodology {
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* ── Header ───────────────────────────────────────────────────── */
+  .method-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .method-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.375rem;
+  }
+
+  .method-icon {
+    display: inline-flex;
+    align-items: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .method-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .method-lead {
+    font-size: 0.9375rem;
+    color: var(--color-gray);
+    margin: 0;
+  }
+
+  /* ── Grid layout ──────────────────────────────────────────────── */
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  /* ── Cards ────────────────────────────────────────────────────── */
+  .method-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .method-card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-gray);
+    margin-bottom: 1rem;
+  }
+
+  .card-icon {
+    display: inline-flex;
+    align-items: center;
+    width: 0.9rem;
+    height: 0.9rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .card-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── Spec list ────────────────────────────────────────────────── */
+  .spec-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .spec-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+  }
+
+  .spec-icon {
+    display: inline-flex;
+    align-items: center;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: var(--color-gray);
+  }
+
+  .spec-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Tinted icons per category */
+  .spec-cpu {
+    color: #34c759;
+  }
+  .spec-gpu {
+    color: #5ac8fa;
+  }
+  .spec-ram {
+    color: #af52de;
+  }
+  .spec-os {
+    color: var(--color-accent);
+  }
+  .spec-runtime {
+    color: #ff9500;
+  }
+
+  .spec-list li > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .spec-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-gray);
+    line-height: 1;
+  }
+
+  .spec-value {
+    font-size: 0.875rem;
+    color: var(--color-text);
+    line-height: 1.4;
+  }
+
+  .spec-value a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .spec-value a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Scoring rules ────────────────────────────────────────────── */
+  .scoring-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .score-rule {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+  }
+
+  .rule-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.25em 0.65em;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 88px;
+    justify-content: center;
+  }
+
+  .rule-badge svg {
+    width: 0.9em;
+    height: 0.9em;
+    flex-shrink: 0;
+  }
+
+  .score-rule--success {
+    background: rgba(52, 199, 89, 0.06);
+  }
+  .score-rule--success .rule-badge {
+    background: rgba(52, 199, 89, 0.13);
+    color: #34c759;
+  }
+
+  .score-rule--partial {
+    background: rgba(255, 149, 0, 0.06);
+  }
+  .score-rule--partial .rule-badge {
+    background: rgba(255, 149, 0, 0.13);
+    color: #ff9500;
+  }
+
+  .score-rule--failure {
+    background: rgba(255, 59, 48, 0.06);
+  }
+  .score-rule--failure .rule-badge {
+    background: rgba(255, 59, 48, 0.13);
+    color: #ff3b30;
+  }
+
+  .rule-desc {
+    color: var(--color-text);
+  }
+
+  .scoring-note {
+    font-size: 0.8125rem;
+    color: var(--color-gray);
+    margin: 0.25rem 0 0;
+    line-height: 1.6;
+  }
+
+  .inline-icon {
+    display: inline;
+    width: 0.875em;
+    height: 0.875em;
+    vertical-align: -0.125em;
+  }
+
+  /* ── Responsive ───────────────────────────────────────────────── */
+  @media (max-width: 700px) {
+    .method-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .method-card--wide {
+      grid-column: 1;
+    }
+  }
+</style>

@@ -1,0 +1,262 @@
+---
+import type { BenchmarkData } from '../../utils/benchmark';
+import { computeTaskScore, computeRunStats } from '../../utils/benchmark';
+import { formatTokens } from '../../utils/helpers';
+import TaskScore from './TaskScore.astro';
+import BenchmarkStats from './BenchmarkStats.astro';
+
+interface Props {
+  /** Folder name — the LLM / suite being evaluated */
+  model: string;
+  /** Filename stub — the agent that ran the tasks */
+  agentRun: string;
+  data: BenchmarkData;
+}
+
+const { model, agentRun, data } = Astro.props;
+
+// Per-task scores (new scoring rules: 100% success, ≥75% partial, <75% failure)
+const taskScores = data.tasks.map(computeTaskScore);
+const runStats   = computeRunStats(data.tasks);
+
+// Agent details from task data (more precise than filename alone)
+const firstTask    = data.tasks[0];
+const agentName    = firstTask?.agent ?? agentRun;
+const agentVersion = firstTask?.agent_version ?? '';
+
+const date = new Date(data.generated_at);
+const formattedDate = date.toLocaleDateString('en-US', {
+  year:  'numeric',
+  month: 'short',
+  day:   'numeric',
+});
+---
+
+<section
+  class="run-card"
+  data-section={`${model}/${agentRun}`}
+  data-model={model}
+  data-agent={agentName}
+>
+  <!-- ── Card header ──────────────────────────────────────────── -->
+  <div class="run-header">
+    <div class="run-title">
+      <span class="agent-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003z"/>
+        </svg>
+      </span>
+      <h3 class="agent-name">{agentName}</h3>
+      {agentVersion && (
+        <span class="version-chip">v{agentVersion}</span>
+      )}
+    </div>
+    <time class="run-date" datetime={data.generated_at}>{formattedDate}</time>
+  </div>
+
+  <!-- ── Stats row (computed scores, not raw JSON summary) ─────── -->
+  <div class="stats-row">
+    <BenchmarkStats stats={runStats} />
+  </div>
+
+  <!-- ── Tasks table ──────────────────────────────────────────── -->
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Status</th>
+          <th>Tests</th>
+          <th>Duration</th>
+          <th class="col-right">Tokens In</th>
+          <th class="col-right">Tokens Out</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.tasks.map((task, i) => (
+          <tr
+            data-filter-row
+            data-status={taskScores[i].grade}
+            data-task={task.task.toLowerCase()}
+          >
+            <td class="task-cell">{task.task}</td>
+            <td class="score-cell"><TaskScore score={taskScores[i]} /></td>
+            <td class="tests-cell">{task.test_details?.test_summary_line ?? '—'}</td>
+            <td class="mono">{task.timing?.total ?? '—'}</td>
+            <td class="mono col-right">{formatTokens(task.tokens?.input)}</td>
+            <td class="mono col-right">{formatTokens(task.tokens?.output)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="section-empty" hidden>No tasks match the current filters.</p>
+</section>
+
+<style>
+  /* ── Card shell ───────────────────────────────────────────────── */
+  .run-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .run-card:hover {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Hidden when all rows filtered out */
+  .run-card[data-collapsed] {
+    display: none;
+  }
+
+  /* ── Header ───────────────────────────────────────────────────── */
+  .run-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.125rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .run-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .agent-icon {
+    display: inline-flex;
+    align-items: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .agent-icon svg { width: 100%; height: 100%; }
+
+  .agent-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+
+  .version-chip {
+    display: inline-block;
+    padding: 0.1em 0.55em;
+    background: var(--color-accent);
+    color: #fff;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    opacity: 0.9;
+  }
+
+  .run-date {
+    font-size: 0.8125rem;
+    color: var(--color-gray);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Stats row ────────────────────────────────────────────────── */
+  .stats-row {
+    padding: 0.875rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-background);
+  }
+
+  /* ── Table ────────────────────────────────────────────────────── */
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .table-scroll table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    display: table;
+    font-size: 0.875rem;
+  }
+
+  .table-scroll thead tr {
+    background: var(--color-tag-bg);
+  }
+
+  .table-scroll th {
+    padding: 0.55rem 1rem;
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-gray);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .table-scroll td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .table-scroll tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .table-scroll tbody tr:hover {
+    background: var(--color-tag-hover-bg);
+  }
+
+  /* ── Cell types ───────────────────────────────────────────────── */
+  .task-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .score-cell {
+    min-width: 180px;
+  }
+
+  .tests-cell {
+    font-size: 0.8125rem;
+    color: var(--color-gray);
+    white-space: normal;
+    min-width: 160px;
+    max-width: 240px;
+  }
+
+  .mono {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8125rem;
+    color: var(--color-gray);
+  }
+
+  .col-right {
+    text-align: right;
+  }
+
+  /* ── Empty state ──────────────────────────────────────────────── */
+  .section-empty {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--color-gray);
+    font-size: 0.875rem;
+  }
+</style>
