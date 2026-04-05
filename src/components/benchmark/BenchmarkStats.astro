@@ -3,9 +3,10 @@ import type { RunStats } from '../../utils/benchmark';
 
 interface Props {
   stats: RunStats;
+  officialRate?: string;
 }
 
-const { stats } = Astro.props;
+const { stats, officialRate } = Astro.props;
 
 const passRateLabel = (stats.overallPassRate * 100).toFixed(1) + '%';
 
@@ -40,7 +41,13 @@ const chips = [
     cls:   'chip-rate',
     icon:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.5 1.5a.5.5 0 0 0-1 0v1.5h-1a.5.5 0 0 0 0 1H8v1.25a3.5 3.5 0 1 0 1 0V4h1a.5.5 0 0 0 0-1h-1V1.5zm.5 5.75a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/></svg>`,
   },
-] as const;
+  ...(officialRate ? [{
+    value: officialRate,
+    label: 'Terminal Bench',
+    cls:   'chip-official',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5A3.5 3.5 0 0 0 4.5 5v.5H3a.5.5 0 0 0-.5.5v1A3.5 3.5 0 0 0 5.93 10.3 3.5 3.5 0 0 0 8 11a3.5 3.5 0 0 0 2.07-.7A3.5 3.5 0 0 0 13 7V6a.5.5 0 0 0-.5-.5h-1.5V5A3.5 3.5 0 0 0 8 1.5zM5.5 6.5H3.5V7a2 2 0 0 0 1.352 1.894A4.5 4.5 0 0 1 4.52 6.5H5.5zm5 0h.98a4.5 4.5 0 0 1-.332 2.394A2 2 0 0 0 12.5 7v-.5h-2V6.5zM7.25 12a.75.75 0 0 1 1.5 0v1.25H10a.75.75 0 0 1 0 1.5H6a.75.75 0 0 1 0-1.5h1.25V12z" clip-rule="evenodd"/></svg>`,
+  }] : []),
+];
 ---
 
 <div class="run-stats" role="list" aria-label="Run statistics">
@@ -105,4 +112,11 @@ const chips = [
 
   .chip-rate .chip-icon    { color: var(--color-accent); }
   .chip-rate .chip-num     { color: var(--color-accent); }
+
+  .chip-official {
+    border-style: dashed;
+    opacity: 0.75;
+  }
+  .chip-official .chip-icon { color: var(--color-gray); }
+  .chip-official .chip-num  { color: var(--color-text); }
 </style>

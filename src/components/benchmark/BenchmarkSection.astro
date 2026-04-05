@@ -56,7 +56,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
 
   <!-- ── Stats row (computed scores, not raw JSON summary) ─────── -->
   <div class="stats-row">
-    <BenchmarkStats stats={runStats} />
+    <BenchmarkStats stats={runStats} officialRate={data.summary.success_rate} />
   </div>
 
   <!-- ── Tasks table ──────────────────────────────────────────── -->
