@@ -1,0 +1,716 @@
+{
+  "generated_at": "2026-04-07T12:01:32.264917",
+  "jobs_dir": "jobs",
+  "summary": {
+    "total_tasks": 26,
+    "success": 9,
+    "failure": 6,
+    "error": 11,
+    "success_rate": "34.6%"
+  },
+  "tasks": [
+    {
+      "task": "build-pmars",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 1600469,
+        "output": 5196,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 39s",
+        "agent_execution": "4m 30s",
+        "verifier": "0m 5s",
+        "total": "5m 26s"
+      },
+      "test_details": {
+        "test_summary_line": "4 passed in 0.23s"
+      }
+    },
+    {
+      "task": "build-pov-ray",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 3168552,
+        "output": 8041,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 46s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 12s",
+        "total": "21m 10s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "3 failed in 1.26s",
+        "failed_tests": [
+          "test_illum1_render_and_verify",
+          "test_povray_version",
+          "test_povray_built_from_correct_source"
+        ]
+      }
+    },
+    {
+      "task": "cancel-async-tasks",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 45478,
+        "output": 539,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 30s",
+        "agent_execution": "0m 16s",
+        "verifier": "0m 19s",
+        "total": "1m 17s"
+      },
+      "test_details": {
+        "test_summary_line": "6 passed in 14.11s"
+      }
+    },
+    {
+      "task": "circuit-fibsqrt",
+      "status": "failure",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 22727,
+        "output": 32000,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 36s",
+        "agent_execution": "13m 23s",
+        "verifier": "0m 9s",
+        "total": "14m 25s"
+      },
+      "failure_reason": "Verifier tests did not pass (reward=0.0)",
+      "test_details": {
+        "test_summary_line": "1 failed, 2 passed in 3.64s",
+        "failed_tests": [
+          "test_sqrt_fib"
+        ]
+      }
+    },
+    {
+      "task": "cobol-modernization",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 730048,
+        "output": 24913,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 28s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 6s",
+        "total": "20m 51s"
+      },
+      "test_details": {
+        "test_summary_line": "3 passed in 0.31s"
+      }
+    },
+    {
+      "task": "code-from-image",
+      "status": "failure",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 230357,
+        "output": 32812,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 43s",
+        "agent_execution": "17m 32s",
+        "verifier": "0m 5s",
+        "total": "18m 34s"
+      },
+      "failure_reason": "Verifier tests did not pass (reward=0.0)",
+      "test_details": {
+        "test_summary_line": "2 failed in 0.02s",
+        "failed_tests": [
+          "test_output_file_exists",
+          "test_output_is_correct"
+        ]
+      }
+    },
+    {
+      "task": "fix-git",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 141537,
+        "output": 1066,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 27s",
+        "agent_execution": "1m 35s",
+        "verifier": "0m 12s",
+        "total": "2m 32s"
+      },
+      "test_details": {
+        "test_summary_line": "2 passed in 0.06s"
+      }
+    },
+    {
+      "task": "fix-ocaml-gc",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 1260156,
+        "output": 2395,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 30s",
+        "agent_execution": "20m 0s",
+        "verifier": "4m 14s",
+        "total": "25m 53s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "1 failed in 0.05s",
+        "failed_tests": [
+          "test_tests_output"
+        ]
+      }
+    },
+    {
+      "task": "git-leak-recovery",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 166493,
+        "output": 1429,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 30s",
+        "agent_execution": "0m 22s",
+        "verifier": "0m 8s",
+        "total": "1m 18s"
+      },
+      "test_details": {
+        "test_summary_line": "5 passed, 1 warning in 0.28s"
+      }
+    },
+    {
+      "task": "gpt2-codegolf",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 27s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 9s",
+        "total": "21m 9s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "1 failed in 0.06s",
+        "failed_tests": [
+          "test_gpt2_implementation"
+        ]
+      }
+    },
+    {
+      "task": "headless-terminal",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 431801,
+        "output": 5187,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 28s",
+        "agent_execution": "5m 36s",
+        "verifier": "2m 22s",
+        "total": "8m 41s"
+      },
+      "test_details": {
+        "test_summary_line": "7 passed in 132.17s (0:02:12)"
+      }
+    },
+    {
+      "task": "kv-store-grpc",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 319559,
+        "output": 1872,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 44s",
+        "agent_execution": "0m 34s",
+        "verifier": "0m 3s",
+        "total": "1m 35s"
+      },
+      "test_details": {
+        "test_summary_line": "7 passed in 0.14s"
+      }
+    },
+    {
+      "task": "make-doom-for-mips",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 2734874,
+        "output": 17588,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 29s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 47s",
+        "total": "21m 36s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "3 failed in 30.16s",
+        "failed_tests": [
+          "test_vm_execution",
+          "test_frame_bmp_exists",
+          "test_frame_bmp_similar_to_reference"
+        ]
+      }
+    },
+    {
+      "task": "make-mips-interpreter",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 5081918,
+        "output": 6152,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 36s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 42s",
+        "total": "21m 57s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "3 failed in 30.21s",
+        "failed_tests": [
+          "test_vm_execution",
+          "test_frame_bmp_exists",
+          "test_frame_bmp_similar_to_reference"
+        ]
+      }
+    },
+    {
+      "task": "path-tracing",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 668049,
+        "output": 4518,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 38s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 9s",
+        "total": "21m 20s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "5 failed in 0.77s",
+        "failed_tests": [
+          "test_image_c_exists",
+          "test_image_compiles",
+          "test_no_deps",
+          "test_runs_and_produces_output",
+          "test_image_similarity"
+        ]
+      }
+    },
+    {
+      "task": "path-tracing-reverse",
+      "status": "failure",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 618889,
+        "output": 35600,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 32s",
+        "agent_execution": "18m 30s",
+        "verifier": "0m 10s",
+        "total": "19m 25s"
+      },
+      "failure_reason": "Verifier tests did not pass (reward=0.0)",
+      "test_details": {
+        "test_summary_line": "3 failed in 1.41s",
+        "failed_tests": [
+          "test_image_c_exists",
+          "test_image_compiles",
+          "test_image_similarity"
+        ]
+      }
+    },
+    {
+      "task": "polyglot-c-py",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 790621,
+        "output": 15441,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "1m 18s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 11s",
+        "total": "21m 41s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "1 failed in 0.08s",
+        "failed_tests": [
+          "test_fibonacci_polyglot"
+        ]
+      }
+    },
+    {
+      "task": "polyglot-rust-c",
+      "status": "failure",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 22584,
+        "output": 32000,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "1m 55s",
+        "agent_execution": "15m 7s",
+        "verifier": "0m 10s",
+        "total": "17m 35s"
+      },
+      "failure_reason": "Verifier tests did not pass (reward=0.0)",
+      "test_details": {
+        "test_summary_line": "1 failed in 0.05s",
+        "failed_tests": [
+          "test_fibonacci_polyglot"
+        ]
+      }
+    },
+    {
+      "task": "prove-plus-comm",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 399750,
+        "output": 4256,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 43s",
+        "agent_execution": "1m 12s",
+        "verifier": "0m 10s",
+        "total": "2m 40s"
+      },
+      "test_details": {
+        "test_summary_line": "4 passed in 0.29s"
+      }
+    },
+    {
+      "task": "pypi-server",
+      "status": "success",
+      "reward": 1.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 1455343,
+        "output": 5851,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 33s",
+        "agent_execution": "15m 55s",
+        "verifier": "0m 6s",
+        "total": "16m 51s"
+      },
+      "test_details": {
+        "test_summary_line": "1 passed in 1.35s"
+      }
+    },
+    {
+      "task": "regex-chess",
+      "status": "failure",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 22966,
+        "output": 32000,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 33s",
+        "agent_execution": "13m 56s",
+        "verifier": "0m 6s",
+        "total": "14m 47s"
+      },
+      "failure_reason": "Verifier tests did not pass (reward=0.0)",
+      "test_details": {
+        "test_summary_line": "4 failed in 0.17s",
+        "failed_tests": [
+          "test_immortal_game",
+          "test_game_of_century",
+          "test_naroditsky_ivanchuk",
+          "test_not_long"
+        ]
+      }
+    },
+    {
+      "task": "schemelike-metacircular-eval",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 152080,
+        "output": 866,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 27s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 16s",
+        "total": "21m 6s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "1 failed in 10.80s",
+        "failed_tests": [
+          "test_interp"
+        ]
+      }
+    },
+    {
+      "task": "torch-pipeline-parallelism",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "1m 11s",
+        "agent_execution": "20m 0s",
+        "verifier": "2m 11s",
+        "total": "23m 36s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "4 failed in 18.85s",
+        "failed_tests": [
+          "test_pipeline_parallel_exists",
+          "test_no_hooks_in_pipeline_parallel",
+          "test_pipeline_parallel[1]",
+          "test_pipeline_parallel[2]"
+        ]
+      }
+    },
+    {
+      "task": "torch-tensor-parallelism",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 61704,
+        "output": 19261,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "1m 53s",
+        "agent_execution": "20m 0s",
+        "verifier": "2m 42s",
+        "total": "24m 49s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "10 failed, 3 passed, 1 warning in 77.94s (0:01:17)",
+        "failed_tests": [
+          "test_column_parallel_linear[1-True]",
+          "test_column_parallel_linear[1-False]",
+          "test_column_parallel_linear[2-True]",
+          "test_column_parallel_linear[2-False]",
+          "test_column_parallel_linear[4-True]",
+          "test_column_parallel_linear[4-False]",
+          "test_row_parallel_linear[2-True]",
+          "test_row_parallel_linear[2-False]",
+          "test_row_parallel_linear[4-True]",
+          "test_row_parallel_linear[4-False]"
+        ]
+      }
+    },
+    {
+      "task": "winning-avg-corewars",
+      "status": "error",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 48633,
+        "output": 9273,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 29s",
+        "agent_execution": "20m 0s",
+        "verifier": "0m 6s",
+        "total": "20m 58s"
+      },
+      "error": {
+        "type": "AgentTimeoutError",
+        "message": "Agent execution timed out after 1200.0 seconds"
+      },
+      "test_details": {
+        "test_summary_line": "1 failed, 2 passed in 0.65s",
+        "failed_tests": [
+          "(5/5): stone.red, vampire.red, paper.red, snake.red, g2-clear.red",
+          "test_warrior_performance"
+        ]
+      }
+    },
+    {
+      "task": "write-compressor",
+      "status": "failure",
+      "reward": 0.0,
+      "agent": "claude-code",
+      "agent_version": "2.1.92",
+      "tokens": {
+        "input": 831362,
+        "output": 28289,
+        "cache": 0
+      },
+      "cost_usd": null,
+      "timing": {
+        "agent_setup": "0m 50s",
+        "agent_execution": "7m 59s",
+        "verifier": "0m 9s",
+        "total": "9m 20s"
+      },
+      "failure_reason": "Verifier tests did not pass (reward=0.0)",
+      "test_details": {
+        "test_summary_line": "2 failed, 1 passed in 0.80s",
+        "failed_tests": [
+          "test_decompression_produces_original",
+          "test_compression_size"
+        ]
+      }
+    }
+  ]
+}

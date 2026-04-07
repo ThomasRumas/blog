@@ -1,0 +1,523 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BenchmarkSection from '../components/benchmark/BenchmarkSection.astro';
+import BenchmarkMethodology from '../components/benchmark/BenchmarkMethodology.astro';
+import type { BenchmarkData, BenchmarkRun } from '../utils/benchmark';
+import { computeRunStats } from '../utils/benchmark';
+
+// Recursive glob: public/benchmark/{model}/{agentRun}.json
+const modules = import.meta.glob<BenchmarkData>('../../public/benchmark/**/*.json', { eager: true });
+
+const runs: BenchmarkRun[] = Object.entries(modules)
+  .map(([key, data]) => {
+    const parts    = key.split('/');
+    const filename = parts.pop()!;            // e.g. claude-code.json
+    const model    = parts.pop()!;            // e.g. omnicoder-9b
+    return { model, agentRun: filename.replace('.json', ''), data };
+  })
+  .sort((a, b) =>
+    new Date(b.data.generated_at).getTime() - new Date(a.data.generated_at).getTime()
+  );
+
+// Group by model (folder name)
+const modelNames = [...new Set(runs.map(r => r.model))].sort();
+const byModel    = Object.fromEntries(
+  modelNames.map(m => [m, runs.filter(r => r.model === m)])
+);
+
+// Unique agent names across all runs (for dropdown)
+const uniqueAgents = [
+  ...new Set(
+    runs.flatMap(r => r.data.tasks.map(t => t.agent)).filter(Boolean)
+  ),
+].sort();
+
+// Global stats (computed with new scoring rules)
+const allTasks    = runs.flatMap(r => r.data.tasks);
+const globalStats = computeRunStats(allTasks);
+---
+
+<BaseLayout title="Benchmarks" description="LLM benchmark results across Terminal Bench coding tasks">
+  <Header />
+  <main class="benchmarks-page">
+
+    <!-- ── Page header ──────────────────────────────────────────── -->
+    <div class="page-header">
+      <div class="page-title-row">
+        <h1>LLM Benchmarks</h1>
+      </div>
+      <p class="subtitle">
+        Results from <a href="https://github.com/aorwall/omni-coder" target="_blank" rel="noopener noreferrer">Terminal Bench</a>
+        coding tasks · {modelNames.length} model{modelNames.length !== 1 ? 's' : ''} · {runs.length} run{runs.length !== 1 ? 's' : ''}
+        · <a href="#methodology" class="methodology-anchor">How I test ↓</a>
+      </p>
+    </div>
+
+    <!-- ── Filter bar ───────────────────────────────────────────── -->
+    <div class="filter-bar" role="search" aria-label="Filter benchmark tasks">
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11zM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9z" clip-rule="evenodd"/>
+          </svg>
+        </span>
+        <label for="search-input" class="sr-only">Search tasks</label>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Search tasks…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <!-- Model filter -->
+      <div class="select-wrap">
+        <span class="select-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 2a.75.75 0 0 1 .75.75v.258a33.186 33.186 0 0 1 6.668 1.574.75.75 0 0 1-.336 1.461 31.28 31.28 0 0 0-1.103-.232l1.702 7.545a.75.75 0 0 1-.387.832A4.981 4.981 0 0 1 15 14a4.98 4.98 0 0 1-2.294-.57.75.75 0 0 1-.387-.832l1.77-7.849a31.743 31.743 0 0 0-3.339-.254v10.505a20.01 20.01 0 0 1 3.78.501.75.75 0 1 1-.339 1.462A18.51 18.51 0 0 0 10 16.5a18.507 18.507 0 0 0-4.192.492.75.75 0 1 1-.338-1.462 20.01 20.01 0 0 1 3.78-.501V5.245a31.743 31.743 0 0 0-3.339.254l1.77 7.849a.75.75 0 0 1-.387.832A4.98 4.98 0 0 1 5 14a4.981 4.981 0 0 1-2.293-.57.75.75 0 0 1-.387-.832l1.702-7.545c-.362.07-.718.146-1.103.232a.75.75 0 0 1-.336-1.461 33.186 33.186 0 0 1 6.668-1.574V2.75A.75.75 0 0 1 10 2z" />
+          </svg>
+        </span>
+        <label for="model-select" class="sr-only">Filter by model</label>
+        <select id="model-select">
+          <option value="">All models</option>
+          {modelNames.map(m => <option value={m}>{m}</option>)}
+        </select>
+      </div>
+
+      <!-- Agent filter -->
+      <div class="select-wrap">
+        <span class="select-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003z"/>
+          </svg>
+        </span>
+        <label for="agent-select" class="sr-only">Filter by agent</label>
+        <select id="agent-select">
+          <option value="">All agents</option>
+          {uniqueAgents.map(a => <option value={a}>{a}</option>)}
+        </select>
+      </div>
+
+      <!-- Status toggles -->
+      <div class="status-toggles" role="group" aria-label="Filter by status">
+        <button class="status-btn active" data-status="">All</button>
+        <button class="status-btn btn-success" data-status="success">
+          <span class="btn-dot" aria-hidden="true"></span>Success
+        </button>
+        <button class="status-btn btn-partial" data-status="partial">
+          <span class="btn-dot" aria-hidden="true"></span>Partial
+        </button>
+        <button class="status-btn btn-failure" data-status="failure">
+          <span class="btn-dot" aria-hidden="true"></span>Failure
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Content: grouped by model ────────────────────────────── -->
+    {modelNames.map(model => (
+      <div class="model-group" data-model-group={model}>
+        <div class="model-heading">
+          <span class="model-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 2a.75.75 0 0 1 .75.75v.258a33.186 33.186 0 0 1 6.668 1.574.75.75 0 0 1-.336 1.461 31.28 31.28 0 0 0-1.103-.232l1.702 7.545a.75.75 0 0 1-.387.832A4.981 4.981 0 0 1 15 14a4.98 4.98 0 0 1-2.294-.57.75.75 0 0 1-.387-.832l1.77-7.849a31.743 31.743 0 0 0-3.339-.254v10.505a20.01 20.01 0 0 1 3.78.501.75.75 0 1 1-.339 1.462A18.51 18.51 0 0 0 10 16.5a18.507 18.507 0 0 0-4.192.492.75.75 0 1 1-.338-1.462 20.01 20.01 0 0 1 3.78-.501V5.245a31.743 31.743 0 0 0-3.339.254l1.77 7.849a.75.75 0 0 1-.387.832A4.98 4.98 0 0 1 5 14a4.981 4.981 0 0 1-2.293-.57.75.75 0 0 1-.387-.832l1.702-7.545c-.362.07-.718.146-1.103.232a.75.75 0 0 1-.336-1.461 33.186 33.186 0 0 1 6.668-1.574V2.75A.75.75 0 0 1 10 2z"/>
+            </svg>
+          </span>
+          <h2 class="model-name">{model}</h2>
+          <span class="run-count">{byModel[model].length} run{byModel[model].length !== 1 ? 's' : ''}</span>
+        </div>
+
+        {byModel[model].map(run => (
+          <BenchmarkSection model={run.model} agentRun={run.agentRun} data={run.data} />
+        ))}
+      </div>
+    ))}
+
+    <BenchmarkMethodology />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  function applyFilters(): void {
+    const searchEl  = document.getElementById('search-input')  as HTMLInputElement | null;
+    const modelEl   = document.getElementById('model-select')  as HTMLSelectElement | null;
+    const agentEl   = document.getElementById('agent-select')  as HTMLSelectElement | null;
+    const activeBtn = document.querySelector<HTMLElement>('.status-btn.active');
+
+    const search    = searchEl?.value.toLowerCase().trim() ?? '';
+    const modelVal  = modelEl?.value ?? '';
+    const agentVal  = agentEl?.value ?? '';
+    const status    = activeBtn?.dataset.status ?? '';
+
+    let totalVisible = 0;
+    let totalRows    = 0;
+
+    // ── Model-group level ────────────────────────────────────────────
+    for (const group of document.querySelectorAll<HTMLElement>('[data-model-group]')) {
+      const groupModel = group.dataset.modelGroup ?? '';
+      const matchModel = !modelVal || groupModel === modelVal;
+
+      if (!matchModel) {
+        group.setAttribute('data-collapsed', '');
+        continue;
+      }
+      group.removeAttribute('data-collapsed');
+
+      // ── Section (run card) level ───────────────────────────────────
+      let groupHasVisible = false;
+
+      for (const section of group.querySelectorAll<HTMLElement>('[data-section]')) {
+        const sectionAgent = section.dataset.agent ?? '';
+        const matchAgent   = !agentVal || sectionAgent === agentVal;
+
+        if (!matchAgent) {
+          section.setAttribute('data-collapsed', '');
+          continue;
+        }
+        section.removeAttribute('data-collapsed');
+
+        // ── Row level ────────────────────────────────────────────────
+        const rows = section.querySelectorAll<HTMLTableRowElement>('tr[data-filter-row]');
+        let sectionVisible = 0;
+
+        for (const row of rows) {
+          const matchSearch = !search || (row.dataset.task ?? '').includes(search);
+          const matchStatus = !status || row.dataset.status === status;
+          row.hidden = !(matchSearch && matchStatus);
+          if (!row.hidden) sectionVisible++;
+        }
+
+        const emptyEl = section.querySelector<HTMLElement>('.section-empty');
+        if (emptyEl) emptyEl.hidden = sectionVisible > 0;
+
+        // Collapse card if all its rows are hidden
+        if (sectionVisible === 0 && (search || status)) {
+          section.setAttribute('data-collapsed', '');
+        } else {
+          section.removeAttribute('data-collapsed');
+          groupHasVisible = true;
+        }
+
+        totalVisible += sectionVisible;
+        totalRows    += rows.length;
+      }
+
+      // Collapse group heading if every card inside is collapsed
+      if (!groupHasVisible && (agentVal || search || status)) {
+        group.setAttribute('data-collapsed', '');
+      }
+    }
+
+    const countEl = document.getElementById('results-count');
+    if (countEl) {
+      countEl.textContent = totalVisible < totalRows
+        ? `${totalVisible} of ${totalRows} tasks`
+        : `${totalRows} task${totalRows !== 1 ? 's' : ''}`;
+    }
+  }
+
+  document.getElementById('search-input')?.addEventListener('input', applyFilters);
+  document.getElementById('model-select')?.addEventListener('change', applyFilters);
+  document.getElementById('agent-select')?.addEventListener('change', applyFilters);
+
+  for (const btn of document.querySelectorAll<HTMLElement>('.status-btn')) {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    });
+  }
+
+  applyFilters();
+</script>
+
+<style>
+  .benchmarks-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+
+  /* ── Page header ──────────────────────────────────────────────── */
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .page-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.375rem;
+  }
+
+  .page-title-row h1 { margin: 0; }
+
+  .global-rate-badge {
+    display: inline-block;
+    padding: 0.2em 0.75em;
+    background: var(--color-accent);
+    color: #fff;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    opacity: 0.85;
+    vertical-align: middle;
+  }
+
+  .subtitle {
+    font-size: 0.9375rem;
+    color: var(--color-gray);
+    margin: 0;
+  }
+
+  .methodology-anchor {
+    color: var(--color-accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .methodology-anchor:hover { text-decoration: underline; }
+
+  /* ── Filter bar ───────────────────────────────────────────────── */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  /* Search field */
+  .search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.625rem;
+    display: inline-flex;
+    align-items: center;
+    width: 0.875rem;
+    height: 0.875rem;
+    color: var(--color-gray);
+    pointer-events: none;
+  }
+
+  .search-icon svg { width: 100%; height: 100%; }
+
+  #search-input {
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    font-family: var(--font-system);
+    font-size: 0.875rem;
+    outline: none;
+    min-width: 200px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  #search-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+  }
+
+  /* Select dropdowns */
+  .select-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .select-icon {
+    position: absolute;
+    left: 0.625rem;
+    display: inline-flex;
+    align-items: center;
+    width: 0.875rem;
+    height: 0.875rem;
+    color: var(--color-gray);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .select-icon svg { width: 100%; height: 100%; }
+
+  select {
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    font-family: var(--font-system);
+    font-size: 0.875rem;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    /* chevron */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23888'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+  }
+
+  select:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+  }
+
+  select option {
+    background: var(--color-card-bg);
+    color: var(--color-text);
+  }
+
+  /* Status toggle pills */
+  .status-toggles {
+    display: flex;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+  }
+
+  .status-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.4rem 0.875rem;
+    border: 1px solid var(--color-border);
+    border-radius: 100px;
+    background: transparent;
+    color: var(--color-gray);
+    font-family: var(--font-system);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .status-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+  }
+
+  .status-btn.active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+
+  .btn-dot {
+    display: inline-block;
+    width: 0.45em;
+    height: 0.45em;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  .btn-success .btn-dot { color: #34C759; }
+  .btn-partial .btn-dot { color: #FF9500; }
+  .btn-failure .btn-dot { color: #FF3B30; }
+
+  .btn-success.active { background: #34C759; border-color: #34C759; color: #fff; }
+  .btn-partial.active { background: #FF9500; border-color: #FF9500; color: #fff; }
+  .btn-failure.active { background: #FF3B30; border-color: #FF3B30; color: #fff; }
+
+  /* Results count */
+  .results-count {
+    font-size: 0.8125rem;
+    color: var(--color-gray);
+    margin: 0;
+    margin-left: auto;
+  }
+
+  /* ── Model group ──────────────────────────────────────────────── */
+  .model-group {
+    margin-bottom: 2.5rem;
+  }
+
+  .model-group[data-collapsed] {
+    display: none;
+  }
+
+  .model-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+    padding-bottom: 0.625rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .model-icon {
+    display: inline-flex;
+    align-items: center;
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .model-icon svg { width: 100%; height: 100%; }
+
+  .model-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-text);
+    font-family: 'Courier New', monospace;
+  }
+
+  .run-count {
+    font-size: 0.75rem;
+    color: var(--color-gray);
+    background: var(--color-tag-bg);
+    border: 1px solid var(--color-border);
+    padding: 0.1em 0.5em;
+    border-radius: 100px;
+  }
+
+  /* ── Accessibility ────────────────────────────────────────────── */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ── Responsive ───────────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    .filter-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .search-wrap,
+    .select-wrap,
+    #search-input,
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .results-count {
+      margin-left: 0;
+    }
+  }
+</style>

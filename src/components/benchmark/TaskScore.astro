@@ -1,0 +1,187 @@
+---
+import type { TaskScore } from '../../utils/benchmark';
+
+interface Props {
+  score: TaskScore;
+}
+
+const { score } = Astro.props;
+
+// SF Symbol-inspired filled icons
+const ICONS: Record<string, string> = {
+  success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5z" clip-rule="evenodd"/></svg>`,
+  partial: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM6.75 9.25a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5z" clip-rule="evenodd"/></svg>`,
+  failure: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>`,
+};
+
+const LABELS: Record<string, string> = {
+  success: 'Success',
+  partial: 'Partial',
+  failure: 'Failure',
+};
+
+const testLabel  = score.total > 0 ? `${score.passed}/${score.total}` : '—';
+const pctLabel   = score.total > 0
+  ? (score.passRate * 100).toFixed(0) + '%'
+  : score.grade === 'success' ? '100%' : '0%';
+---
+
+<div class="task-score">
+  <div class="score-row">
+    <span class={`score-badge score-${score.grade}`}>
+      <span class="score-icon" set:html={ICONS[score.grade]} />
+      {LABELS[score.grade]}
+    </span>
+    <span class="score-tests">{testLabel}</span>
+    <span class="score-pct">{pctLabel}</span>
+  </div>
+
+  {score.errorMessage && (
+    <span class="score-tooltip-wrap">
+      <button type="button" class="score-tooltip-btn" aria-label="Show error details">
+        <!-- Warning triangle icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M6.701 2.25c.578-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804A1.5 1.5 0 0 1 1.505 11.25l5.196-9zM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-1.5 0v-3A.75.75 0 0 1 8 4zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+      <!-- position: fixed so table overflow never clips it -->
+      <div class="score-tooltip-box" role="tooltip" aria-hidden="true">
+        {score.errorMessage}
+      </div>
+    </span>
+  )}
+</div>
+
+<!-- Tooltip positioning — runs once even if component is used many times -->
+<script>
+  for (const wrap of document.querySelectorAll<HTMLElement>('.score-tooltip-wrap')) {
+    const btn = wrap.querySelector<HTMLElement>('.score-tooltip-btn');
+    const box = wrap.querySelector<HTMLElement>('.score-tooltip-box');
+    if (!btn || !box) continue;
+
+    btn.addEventListener('mouseenter', () => {
+      const r    = btn.getBoundingClientRect();
+      const boxH = box.offsetHeight || 44;
+      box.style.left    = (r.left + r.width / 2) + 'px';
+      box.style.top     = (r.top - boxH - 10) + 'px';
+      box.style.opacity = '1';
+    });
+
+    btn.addEventListener('mouseleave', () => {
+      box.style.opacity = '0';
+    });
+  }
+</script>
+
+<style>
+  .task-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* ── Badge ──────────────────────────────────────────────────── */
+  .score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.25em 0.65em;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .score-icon {
+    display: inline-flex;
+    align-items: center;
+    width: 0.9em;
+    height: 0.9em;
+    flex-shrink: 0;
+  }
+
+  .score-icon :global(svg) { width: 100%; height: 100%; }
+
+  /* Apple system colors */
+  .score-success { background: rgba(52,  199, 89,  0.13); color: #34C759; }
+  .score-partial { background: rgba(255, 149, 0,   0.13); color: #FF9500; }
+  .score-failure { background: rgba(255, 59,  48,  0.13); color: #FF3B30; }
+
+  /* ── Test counts ────────────────────────────────────────────── */
+  .score-tests {
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+    color: var(--color-gray);
+  }
+
+  .score-pct {
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--color-gray);
+  }
+
+  /* ── Error tooltip trigger ──────────────────────────────────── */
+  .score-tooltip-wrap {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .score-tooltip-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: help;
+    color: #FF9500;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+  }
+
+  .score-tooltip-btn:hover { opacity: 1; }
+  .score-tooltip-btn svg   { width: 100%; height: 100%; }
+
+  /* ── Tooltip box (position: fixed escapes all overflow contexts) ─*/
+  .score-tooltip-box {
+    position: fixed;
+    width: max-content;
+    max-width: 300px;
+    background: #1c1c1e;
+    color: #f5f5f7;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    white-space: normal;
+    word-break: break-word;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 9999;
+    transform: translateX(-50%);
+    transition: opacity 0.15s ease;
+  }
+
+  /* Downward caret */
+  .score-tooltip-box::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1c1c1e;
+  }
+</style>

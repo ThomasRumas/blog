@@ -1,0 +1,60 @@
+---
+interface Props {
+  status: string;
+}
+
+const { status } = Astro.props;
+
+// SF Symbol-inspired filled icons
+const ICONS: Record<string, string> = {
+  success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5z" clip-rule="evenodd"/></svg>`,
+  failure: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>`,
+  error:   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5zm0 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" clip-rule="evenodd"/></svg>`,
+};
+
+const LABELS: Record<string, string> = {
+  success: 'Success',
+  failure: 'Failure',
+  error:   'Error',
+};
+
+const icon  = ICONS[status]  ?? '';
+const label = LABELS[status] ?? status;
+---
+
+<span class={`badge badge-${status}`}>
+  {icon && <span class="badge-icon" set:html={icon} />}
+  {label}
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.25em 0.65em;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .badge-icon {
+    display: inline-flex;
+    align-items: center;
+    width: 0.9em;
+    height: 0.9em;
+    flex-shrink: 0;
+  }
+
+  .badge-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Apple system colors */
+  .badge-success { background: rgba(52, 199, 89,  0.13); color: #34C759; }
+  .badge-failure { background: rgba(255, 59, 48,  0.13); color: #FF3B30; }
+  .badge-error   { background: rgba(255, 149, 0,  0.13); color: #FF9500; }
+</style>
