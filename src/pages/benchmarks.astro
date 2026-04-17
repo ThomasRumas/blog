@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BenchmarkSection from '../components/benchmark/BenchmarkSection.astro';
 import BenchmarkMethodology from '../components/benchmark/BenchmarkMethodology.astro';
+import BenchmarkComparison from '../components/benchmark/BenchmarkComparison.astro';
 import type { BenchmarkData, BenchmarkRun } from '../utils/benchmark';
 import { computeRunStats } from '../utils/benchmark';
 
@@ -47,6 +48,12 @@ const globalStats = computeRunStats(allTasks);
     <div class="page-header">
       <div class="page-title-row">
         <h1>LLM Benchmarks</h1>
+        <button id="compare-mode-btn" type="button" class="compare-mode-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M3 4a1 1 0 011-1h3a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm9-1a1 1 0 00-1 1v12a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3z"/>
+          </svg>
+          <span>Compare</span>
+        </button>
       </div>
       <p class="subtitle">
         Results from <a href="https://github.com/aorwall/omni-coder" target="_blank" rel="noopener noreferrer">Terminal Bench</a>
@@ -54,6 +61,10 @@ const globalStats = computeRunStats(allTasks);
         · <a href="#methodology" class="methodology-anchor">How I test ↓</a>
       </p>
     </div>
+
+    <BenchmarkComparison runs={runs} />
+
+    <div id="normal-content">
 
     <!-- ── Filter bar ───────────────────────────────────────────── -->
     <div class="filter-bar" role="search" aria-label="Filter benchmark tasks">
@@ -138,6 +149,7 @@ const globalStats = computeRunStats(allTasks);
     ))}
 
     <BenchmarkMethodology />
+    </div><!-- #normal-content -->
   </main>
   <Footer />
 </BaseLayout>
@@ -234,6 +246,22 @@ const globalStats = computeRunStats(allTasks);
   }
 
   applyFilters();
+
+  // ── Compare mode toggle ──────────────────────────────────────────
+  const compareModeBtn = document.getElementById('compare-mode-btn') as HTMLButtonElement | null;
+  const comparePanel   = document.getElementById('compare-panel');
+  const normalContent  = document.getElementById('normal-content');
+
+  compareModeBtn?.addEventListener('click', () => {
+    const entering = comparePanel?.hasAttribute('hidden') ?? true;
+    comparePanel?.toggleAttribute('hidden', !entering);
+    normalContent?.toggleAttribute('hidden', entering);
+    if (compareModeBtn) {
+      const label = compareModeBtn.querySelector('span');
+      if (label) label.textContent = entering ? '← Back' : 'Compare';
+      compareModeBtn.classList.toggle('compare-btn-active', entering);
+    }
+  });
 </script>
 
 <style>
@@ -284,6 +312,42 @@ const globalStats = computeRunStats(allTasks);
   }
 
   .methodology-anchor:hover { text-decoration: underline; }
+
+  /* ── Compare mode button ─────────────────────────────────────── */
+  .compare-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.875rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-gray);
+    font-family: var(--font-system);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .compare-mode-btn svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .compare-mode-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .compare-btn-active,
+  .compare-btn-active:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
 
   /* ── Filter bar ───────────────────────────────────────────────── */
   .filter-bar {

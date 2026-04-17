@@ -1,0 +1,604 @@
+---
+import type { BenchmarkRun } from '../../utils/benchmark';
+import { computeTaskScore } from '../../utils/benchmark';
+
+interface Props {
+  runs: BenchmarkRun[];
+}
+
+const { runs } = Astro.props;
+
+// Pre-compute minimal data for client-side rendering
+const clientRuns = runs.map(run => {
+  const firstTask = run.data.tasks[0];
+  return {
+    id:           `${run.model}/${run.agentRun}`,
+    model:        run.model,
+    agentRun:     run.agentRun,
+    agentName:    firstTask?.agent ?? run.agentRun,
+    agentVersion: firstTask?.agent_version ?? '',
+    tasks: run.data.tasks.map(task => {
+      const score = computeTaskScore(task);
+      return {
+        name:     task.task,
+        grade:    score.grade,
+        passRate: score.passRate,
+        passed:   score.passed,
+        total:    score.total,
+      };
+    }),
+  };
+});
+---
+
+<div id="compare-panel" hidden>
+  <!-- ── Run selectors ────────────────────────────────────────── -->
+  <div class="cmp-controls">
+    <div class="run-picker">
+      <label for="cmp-sel-a" class="picker-label">
+        <span class="side-pill side-a">A</span>
+      </label>
+      <div class="picker-select-wrap">
+        <select id="cmp-sel-a">
+          <option value="">Select run A…</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="cmp-vs-block">
+      <button id="cmp-swap" type="button" class="swap-btn" aria-label="Swap runs A and B">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M13.2 2.24a.75.75 0 0 0 .04 1.06l2.1 1.95H6.75a.75.75 0 0 0 0 1.5h8.59l-2.1 1.95a.75.75 0 1 0 1.02 1.1l3.5-3.25a.75.75 0 0 0 0-1.1l-3.5-3.25a.75.75 0 0 0-1.06.04zm-6.4 8a.75.75 0 0 0-1.06-.04l-3.5 3.25a.75.75 0 0 0 0 1.1l3.5 3.25a.75.75 0 1 0 1.02-1.1l-2.1-1.95h8.59a.75.75 0 0 0 0-1.5H4.66l2.1-1.95a.75.75 0 0 0 .04-1.06z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="run-picker">
+      <label for="cmp-sel-b" class="picker-label">
+        <span class="side-pill side-b">B</span>
+      </label>
+      <div class="picker-select-wrap">
+        <select id="cmp-sel-b">
+          <option value="">Select run B…</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Output ───────────────────────────────────────────────── -->
+  <div id="cmp-output" aria-live="polite">
+    <p class="cmp-placeholder">Select two different runs above to see the comparison.</p>
+  </div>
+</div>
+
+<script define:vars={{ clientRuns }}>
+  // ── Helpers ──────────────────────────────────────────────────────
+
+  function getWinner(a, b) {
+    if (!a && !b) return 'tie';
+    if (!a)       return 'b';
+    if (!b)       return 'a';
+    if (a.passRate > b.passRate) return 'a';
+    if (b.passRate > a.passRate) return 'b';
+    return 'tie';
+  }
+
+  function pctLabel(task) {
+    if (!task) return '';
+    if (task.total > 0) return Math.round(task.passRate * 100) + '%';
+    return task.grade === 'success' ? '100%' : '0%';
+  }
+
+  const GRADE_ICON = {
+    success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" width="12" height="12"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm3.857-8.809a.5.5 0 0 0-.808-.589l-3.423 4.705-1.88-1.881a.5.5 0 1 0-.707.707l2.5 2.5a.5.5 0 0 0 .758-.06l3.56-4.882z" clip-rule="evenodd"/></svg>`,
+    partial: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" width="12" height="12"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM5.25 7.25a.75.75 0 0 0 0 1.5h5.5a.75.75 0 0 0 0-1.5h-5.5z" clip-rule="evenodd"/></svg>`,
+    failure: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" width="12" height="12"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm2.78-4.22a.75.75 0 0 1-1.06 1.06L8 11.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L6.94 10 5.22 8.28a.75.75 0 0 1 1.06-1.06L8 8.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L9.06 10l1.72 1.72z" clip-rule="evenodd"/></svg>`,
+  };
+
+  const GRADE_LABEL = { success: 'Success', partial: 'Partial', failure: 'Failure' };
+
+  function scoreCell(task, isWinner, side) {
+    const winCls = isWinner ? ' is-winner' : '';
+    if (!task) {
+      return `<td class="cmp-score cmp-side-${side} cmp-na${winCls}"><span class="cmp-na-text">–</span></td>`;
+    }
+    const testsStr = task.total > 0
+      ? `<span class="cmp-tests">${task.passed}/${task.total}</span>`
+      : '';
+    return `<td class="cmp-score cmp-side-${side} cmp-${task.grade}${winCls}">
+      <span class="cmp-badge"><span class="cmp-badge-icon">${GRADE_ICON[task.grade]}</span>${GRADE_LABEL[task.grade]}</span>
+      <span class="cmp-meta">${testsStr}<span class="cmp-pct">${pctLabel(task)}</span></span>
+    </td>`;
+  }
+
+  function runLabel(run) {
+    const v = run.agentVersion ? ` v${run.agentVersion}` : '';
+    return `${run.model} · ${run.agentName}${v}`;
+  }
+
+  // ── Comparison renderer ──────────────────────────────────────────
+
+  function renderComparison(runA, runB) {
+    const aMap = new Map(runA.tasks.map(t => [t.name, t]));
+    const bMap = new Map(runB.tasks.map(t => [t.name, t]));
+    const allNames = [...new Set([...aMap.keys(), ...bMap.keys()])].sort();
+
+    let aWins = 0, bWins = 0, ties = 0;
+
+    const rowsHTML = allNames.map(name => {
+      const a = aMap.get(name) ?? null;
+      const b = bMap.get(name) ?? null;
+      const w = getWinner(a, b);
+      if (w === 'a') aWins++;
+      else if (w === 'b') bWins++;
+      else ties++;
+
+      const ind = w === 'a'
+        ? `<span class="win-ind win-a">A</span>`
+        : w === 'b'
+        ? `<span class="win-ind win-b">B</span>`
+        : `<span class="win-ind win-tie">=</span>`;
+
+      return `<tr data-winner="${w}">
+        <td class="cmp-task">${name}</td>
+        ${scoreCell(a, w === 'a', 'a')}
+        <td class="cmp-ind-cell">${ind}</td>
+        ${scoreCell(b, w === 'b', 'b')}
+      </tr>`;
+    }).join('');
+
+    const total = aWins + bWins + ties;
+    const aBarW = total > 0 ? (aWins / total * 100).toFixed(1) : 0;
+    const tBarW = total > 0 ? (ties  / total * 100).toFixed(1) : 0;
+    const bBarW = total > 0 ? (bWins / total * 100).toFixed(1) : 0;
+
+    const overallMsg =
+      aWins > bWins ? `<strong class="ow-a">${runA.model}</strong> leads` :
+      bWins > aWins ? `<strong class="ow-b">${runB.model}</strong> leads` :
+      `Even match`;
+
+    const versusTh = `<span class="side-pill side-a">A</span>`;
+    const versusThB = `<span class="side-pill side-b">B</span>`;
+
+    return `
+      <div class="cmp-summary">
+        <div class="cmp-sum-names">
+          <span class="cmp-name-a">${runLabel(runA)}</span>
+          <span class="cmp-overall">${overallMsg}</span>
+          <span class="cmp-name-b">${runLabel(runB)}</span>
+        </div>
+        <div class="cmp-bar" role="meter" aria-label="Task win ratio">
+          <div class="cmp-bar-a" style="width:${aBarW}%" title="A: ${aWins} wins"></div>
+          <div class="cmp-bar-tie" style="width:${tBarW}%" title="Tie: ${ties}"></div>
+          <div class="cmp-bar-b" style="width:${bBarW}%" title="B: ${bWins} wins"></div>
+        </div>
+        <div class="cmp-sum-counts">
+          <span class="cmp-count-a">${aWins} win${aWins !== 1 ? 's' : ''}</span>
+          <span class="cmp-count-tie">${ties} tie${ties !== 1 ? 's' : ''}</span>
+          <span class="cmp-count-b">${bWins} win${bWins !== 1 ? 's' : ''}</span>
+        </div>
+      </div>
+      <div class="cmp-table-wrap">
+        <table class="cmp-table">
+          <thead>
+            <tr>
+              <th class="cmp-th-task">Task</th>
+              <th class="cmp-th-a">${versusTh} ${runA.model}<span class="th-sub">${runA.agentName}${runA.agentVersion ? ' v' + runA.agentVersion : ''}</span></th>
+              <th class="cmp-th-ind"></th>
+              <th class="cmp-th-b">${versusThB} ${runB.model}<span class="th-sub">${runB.agentName}${runB.agentVersion ? ' v' + runB.agentVersion : ''}</span></th>
+            </tr>
+          </thead>
+          <tbody>${rowsHTML}</tbody>
+        </table>
+      </div>`;
+  }
+
+  // ── DOM wiring ───────────────────────────────────────────────────
+
+  function populate() {
+    const selA = document.getElementById('cmp-sel-a');
+    const selB = document.getElementById('cmp-sel-b');
+    if (!selA || !selB) return;
+
+    const opts = clientRuns
+      .map(r => `<option value="${r.id}">${runLabel(r)}</option>`)
+      .join('');
+
+    selA.innerHTML = `<option value="">Select run A…</option>${opts}`;
+    selB.innerHTML = `<option value="">Select run B…</option>${opts}`;
+
+    if (clientRuns.length >= 1) selA.value = clientRuns[0].id;
+    if (clientRuns.length >= 2) selB.value = clientRuns[1].id;
+
+    refresh();
+  }
+
+  function refresh() {
+    const selA   = document.getElementById('cmp-sel-a');
+    const selB   = document.getElementById('cmp-sel-b');
+    const output = document.getElementById('cmp-output');
+    if (!selA || !selB || !output) return;
+
+    const runA = clientRuns.find(r => r.id === selA.value);
+    const runB = clientRuns.find(r => r.id === selB.value);
+
+    if (!runA || !runB || runA.id === runB.id) {
+      output.innerHTML = '<p class="cmp-placeholder">Select two different runs to compare.</p>';
+      return;
+    }
+
+    output.innerHTML = renderComparison(runA, runB);
+  }
+
+  document.getElementById('cmp-sel-a')?.addEventListener('change', refresh);
+  document.getElementById('cmp-sel-b')?.addEventListener('change', refresh);
+
+  document.getElementById('cmp-swap')?.addEventListener('click', () => {
+    const selA = document.getElementById('cmp-sel-a');
+    const selB = document.getElementById('cmp-sel-b');
+    if (!selA || !selB) return;
+    const tmp = selA.value;
+    selA.value = selB.value;
+    selB.value = tmp;
+    refresh();
+  });
+
+  // Initialize once the panel is revealed for the first time
+  const panel = document.getElementById('compare-panel');
+  if (panel) {
+    const obs = new MutationObserver(() => {
+      if (!panel.hidden) { obs.disconnect(); populate(); }
+    });
+    obs.observe(panel, { attributes: true, attributeFilter: ['hidden'] });
+    if (!panel.hidden) populate();
+  }
+</script>
+
+<style is:global>
+  /* ── Color tokens ─────────────────────────────────────────────── */
+  :root {
+    --cmp-a:     #2563eb;
+    --cmp-a-bg:  rgba(37, 99, 235, 0.07);
+    --cmp-b:     #d97706;
+    --cmp-b-bg:  rgba(217, 119, 6, 0.07);
+    --cmp-tie:   #6b7280;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --cmp-a:    #60a5fa;
+      --cmp-a-bg: rgba(96, 165, 250, 0.1);
+      --cmp-b:    #fbbf24;
+      --cmp-b-bg: rgba(251, 191, 36, 0.1);
+    }
+  }
+
+  /* ── Controls bar ─────────────────────────────────────────────── */
+  #compare-panel { margin-bottom: 2rem; }
+
+  .cmp-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .run-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .picker-label {
+    display: flex;
+    align-items: center;
+  }
+
+  .picker-select-wrap { flex: 1; }
+
+  .picker-select-wrap select {
+    width: 100%;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    font-family: var(--font-system);
+    font-size: 0.875rem;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23888'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .picker-select-wrap select:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+  }
+
+  .cmp-vs-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    flex-shrink: 0;
+  }
+
+  .cmp-vs-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-gray);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .swap-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    color: var(--color-gray);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .swap-btn svg { width: 1rem; height: 1rem; }
+
+  .swap-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  /* ── Side pills ───────────────────────────────────────────────── */
+  .side-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+
+  .side-a { background: var(--cmp-a); }
+  .side-b { background: var(--cmp-b); }
+
+  /* ── Placeholder ──────────────────────────────────────────────── */
+  .cmp-placeholder {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-gray);
+    font-size: 0.9375rem;
+    border: 1px dashed var(--color-border);
+    border-radius: 12px;
+    margin: 0;
+  }
+
+  /* ── Summary card ─────────────────────────────────────────────── */
+  .cmp-summary {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 1.125rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .cmp-sum-names {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .cmp-name-a {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--cmp-a);
+    font-family: 'Courier New', monospace;
+  }
+
+  .cmp-name-b {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--cmp-b);
+    font-family: 'Courier New', monospace;
+  }
+
+  .cmp-overall {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .cmp-overall .ow-a { color: var(--cmp-a); }
+  .cmp-overall .ow-b { color: var(--cmp-b); }
+
+  .cmp-bar {
+    height: 10px;
+    border-radius: 6px;
+    display: flex;
+    overflow: hidden;
+    background: var(--color-tag-bg);
+    margin-bottom: 0.5rem;
+  }
+
+  .cmp-bar-a   { background: var(--cmp-a); transition: width 0.3s ease; }
+  .cmp-bar-tie { background: var(--color-border); transition: width 0.3s ease; }
+  .cmp-bar-b   { background: var(--cmp-b); transition: width 0.3s ease; }
+
+  .cmp-sum-counts {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+  }
+
+  .cmp-count-a   { color: var(--cmp-a); font-weight: 600; }
+  .cmp-count-tie { color: var(--color-gray); }
+  .cmp-count-b   { color: var(--cmp-b); font-weight: 600; }
+
+  /* ── Comparison table ─────────────────────────────────────────── */
+  .cmp-table-wrap {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    overflow-x: auto;
+  }
+
+  .cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  .cmp-table thead tr {
+    background: var(--color-tag-bg);
+  }
+
+  .cmp-table th {
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .cmp-th-task { width: 22%; }
+  .cmp-th-a,
+  .cmp-th-b   { width: 37%; }
+  .cmp-th-ind { width: 4%; text-align: center; }
+
+  .cmp-th-a .side-pill,
+  .cmp-th-b .side-pill { margin-right: 0.35rem; vertical-align: middle; }
+
+  .th-sub {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--color-gray);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-top: 0.15em;
+  }
+
+  .cmp-table tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.1s ease;
+  }
+
+  .cmp-table tbody tr:last-child { border-bottom: none; }
+
+  .cmp-table tbody tr:hover { background: var(--color-tag-bg); }
+
+  .cmp-task {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+    font-family: 'Courier New', monospace;
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  /* ── Score cells ──────────────────────────────────────────────── */
+  .cmp-score {
+    padding: 0.55rem 1rem;
+    vertical-align: middle;
+    transition: background 0.1s ease;
+  }
+
+  .cmp-side-a.is-winner {
+    border-left: 3px solid var(--cmp-a);
+    background: var(--cmp-a-bg);
+  }
+
+  .cmp-side-b.is-winner {
+    border-right: 3px solid var(--cmp-b);
+    background: var(--cmp-b-bg);
+  }
+
+  .cmp-na-text {
+    font-style: italic;
+    color: var(--color-gray);
+  }
+
+  .cmp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .cmp-badge-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .cmp-success .cmp-badge { color: #16a34a; }
+  .cmp-partial .cmp-badge { color: #d97706; }
+  .cmp-failure .cmp-badge { color: #dc2626; }
+
+  @media (prefers-color-scheme: dark) {
+    .cmp-success .cmp-badge { color: #4ade80; }
+    .cmp-partial .cmp-badge { color: #fbbf24; }
+    .cmp-failure .cmp-badge { color: #f87171; }
+  }
+
+  .cmp-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-gray);
+  }
+
+  .cmp-tests,
+  .cmp-pct { font-variant-numeric: tabular-nums; }
+
+  .cmp-pct { font-weight: 500; }
+
+  /* ── Win indicator column ─────────────────────────────────────── */
+  .cmp-ind-cell {
+    text-align: center;
+    padding: 0.55rem 0.375rem;
+    vertical-align: middle;
+  }
+
+  .win-ind {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .win-a   { background: var(--cmp-a); }
+  .win-b   { background: var(--cmp-b); }
+  .win-tie { background: var(--cmp-tie); }
+</style>
